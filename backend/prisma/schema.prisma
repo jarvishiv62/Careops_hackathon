@@ -1,0 +1,429 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = "postgresql://postgres:utkarsh@localhost:5432/hack_db?schema=public"
+}
+
+/// Workspace model for multi-tenancy
+model Workspace {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique
+  description String?
+  settings    Json?    /// Store workspace-specific settings
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  /// Relations
+  users          WorkspaceUser[]
+  contacts       Contact[]
+  conversations  Conversation[]
+  bookingTypes   BookingType[]
+  bookings       Booking[]
+  forms          Form[]
+  inventory      Inventory[]
+  integrations   Integration[]
+  automations    Automation[]
+  notifications  Notification[]
+  invitations    Invitation[]
+
+  @@map("workspaces")
+}
+
+/// User model
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String
+  password  String
+  avatar    String?
+  role      UserRole @default(USER)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  /// Relations
+  workspaces    WorkspaceUser[]
+  refreshTokens RefreshToken[]
+  notifications Notification[]
+  invitationsSent Invitation[] @relation("InvitationsSent")
+  invitationsAccepted Invitation[] @relation("InvitationsAccepted")
+
+  @@map("users")
+}
+
+/// Workspace-User junction table
+model WorkspaceUser {
+  id          String   @id @default(cuid())
+  userId      String
+  workspaceId String
+  role        WorkspaceRole @default(MEMBER)
+  joinedAt    DateTime @default(now())
+
+  /// Relations
+  user       User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  workspace  Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, workspaceId])
+  @@map("workspace_users")
+}
+
+/// Contact model
+model Contact {
+  id          String   @id @default(cuid())
+  workspaceId String
+  firstName   String
+  lastName    String?
+  email       String?
+  phone       String?
+  company     String?
+  tags        String[] /// Array of tags
+  customFields Json?   /// Store custom contact fields
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  /// Relations
+  workspace     Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  conversations Conversation[]
+  bookings     Booking[]
+
+  @@map("contacts")
+}
+
+/// Conversation model
+model Conversation {
+  id          String           @id @default(cuid())
+  workspaceId String
+  contactId   String
+  channel     ConversationChannel
+  status      ConversationStatus @default(ACTIVE)
+  metadata    Json?            /// Store channel-specific metadata
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  /// Relations
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  contact     Contact @relation(fields: [contactId], references: [id], onDelete: Cascade)
+  messages    Message[]
+
+  @@map("conversations")
+}
+
+/// Message model
+model Message {
+  id             String      @id @default(cuid())
+  conversationId String
+  content        String
+  senderType     SenderType
+  senderId       String?     /// ID of user or contact depending on senderType
+  messageType    MessageType @default(TEXT)
+  metadata       Json?       /// Store message-specific data (file URLs, etc.)
+  createdAt      DateTime    @default(now())
+
+  /// Relations
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  @@map("messages")
+}
+
+/// Booking Type model
+model BookingType {
+  id          String   @id @default(cuid())
+  workspaceId String
+  name        String
+  description String?
+  duration    Int      /// Duration in minutes
+  location    String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  /// Relations
+  workspace         Workspace         @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  bookings         Booking[]
+  availabilityRules AvailabilityRule[]
+  forms            FormBookingType[]
+
+  @@map("booking_types")
+}
+
+/// Availability Rule model
+model AvailabilityRule {
+  id            String   @id @default(cuid())
+  bookingTypeId String
+  dayOfWeek     Int      /// 0 = Sunday, 1 = Monday, ..., 6 = Saturday
+  startTime     String   /// HH:MM format
+  endTime       String   /// HH:MM format
+  createdAt     DateTime @default(now())
+
+  /// Relations
+  bookingType BookingType @relation(fields: [bookingTypeId], references: [id], onDelete: Cascade)
+
+  @@map("availability_rules")
+}
+
+/// Form-Booking Type junction table
+model FormBookingType {
+  id            String   @id @default(cuid())
+  formId        String
+  bookingTypeId String
+  createdAt     DateTime @default(now())
+
+  /// Relations
+  form        Form        @relation(fields: [formId], references: [id], onDelete: Cascade)
+  bookingType BookingType @relation(fields: [bookingTypeId], references: [id], onDelete: Cascade)
+
+  @@unique([formId, bookingTypeId])
+  @@map("form_booking_types")
+}
+
+/// Booking model
+model Booking {
+  id            String       @id @default(cuid())
+  workspaceId   String
+  contactId     String
+  bookingTypeId String
+  startTime     DateTime
+  endTime       DateTime
+  status        BookingStatus @default(PENDING)
+  notes         String?
+  metadata      Json?        /// Store additional booking data
+  referenceCode String       @unique @default(cuid())
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  /// Relations
+  workspace   Workspace   @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  contact     Contact     @relation(fields: [contactId], references: [id], onDelete: Cascade)
+  bookingType BookingType @relation(fields: [bookingTypeId], references: [id], onDelete: Cascade)
+
+  @@map("bookings")
+}
+
+/// Form model
+model Form {
+  id          String   @id @default(cuid())
+  workspaceId String
+  name        String
+  description String?
+  fields      Json     /// Store form field definitions
+  settings    Json?    /// Store form settings
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  /// Relations
+  workspace   Workspace         @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  submissions FormSubmission[]
+  bookingTypes FormBookingType[]
+
+  @@map("forms")
+}
+
+/// Form Submission model
+model FormSubmission {
+  id       String   @id @default(cuid())
+  formId   String
+  data     Json     /// Store submitted form data
+  metadata Json?    /// Store submission metadata (IP, user agent, etc.)
+  createdAt DateTime @default(now())
+
+  /// Relations
+  form     Form @relation(fields: [formId], references: [id], onDelete: Cascade)
+
+  @@map("form_submissions")
+}
+
+/// Inventory model
+model Inventory {
+  id          String   @id @default(cuid())
+  workspaceId String
+  name        String
+  description String?
+  category    String?
+  quantity    Int      @default(0)
+  unit        String?
+  price       Float?
+  sku         String?  @unique
+  metadata    Json?    /// Store additional inventory data
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  /// Relations
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@map("inventory")
+}
+
+/// Integration model
+model Integration {
+  id          String   @id @default(cuid())
+  workspaceId String
+  type        String   /// Type of integration (e.g., 'slack', 'google_calendar', etc.)
+  name        String
+  config      Json     /// Store integration configuration
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  /// Relations
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@map("integrations")
+}
+
+/// Automation model for custom workflow rules
+model Automation {
+  id          String   @id @default(cuid())
+  workspaceId String
+  name        String
+  description String?
+  trigger     String   /// Event trigger (e.g., "contact.created", "booking.created")
+  isActive    Boolean  @default(true)
+  actions     Json     /// Array of automation actions
+  conditions  Json?    /// Optional conditions for trigger
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  /// Relations
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  logs      AutomationLog[]
+
+  @@map("automations")
+}
+
+/// Notification model for real-time updates
+model Notification {
+  id          String   @id @default(cuid())
+  workspaceId String
+  userId      String?  /// null for workspace-wide notifications
+  type        String   /// "message", "booking", "contact", "automation", "inventory", "system"
+  title       String
+  message     String
+  data        Json?    /// Additional notification data
+  isRead      Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  /// Relations
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  user     User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("notifications")
+}
+
+/// Automation execution logs
+model AutomationLog {
+  id           String   @id @default(cuid())
+  automationId String
+  eventType    String
+  status       String   /// "success", "failed", "pending"
+  inputData    Json?    /// Input data that triggered the automation
+  outputData   Json?    /// Output data from automation execution
+  errorMessage String?
+  executedAt   DateTime @default(now())
+
+  /// Relations
+  automation Automation @relation(fields: [automationId], references: [id], onDelete: Cascade)
+
+  @@map("automation_logs")
+}
+
+/// Refresh Token model for "Remember Me" functionality
+model RefreshToken {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  userId    String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  /// Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("refresh_tokens")
+}
+
+/// Invitation model for staff invitations
+model Invitation {
+  id         String   @id @default(cuid())
+  workspaceId String
+  email      String
+  role       WorkspaceRole @default(MEMBER)
+  permissions String[] /// Array of specific permissions
+  token      String   @unique
+  status     InvitationStatus @default(PENDING)
+  invitedBy  String
+  acceptedBy String?
+  acceptedAt DateTime?
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+
+  /// Relations
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  inviter   User     @relation("InvitationsSent", fields: [invitedBy], references: [id])
+  accepter  User?    @relation("InvitationsAccepted", fields: [acceptedBy], references: [id])
+
+  @@unique([workspaceId, email, status])
+  @@map("invitations")
+}
+
+/// Enums
+enum UserRole {
+  ADMIN
+  USER
+}
+
+enum WorkspaceRole {
+  OWNER
+  ADMIN
+  MEMBER
+  VIEWER
+}
+
+enum ConversationChannel {
+  EMAIL
+  CHAT
+  PHONE
+  SMS
+  WHATSAPP
+  TELEGRAM
+  SLACK
+}
+
+enum ConversationStatus {
+  ACTIVE
+  CLOSED
+  ARCHIVED
+}
+
+enum SenderType {
+  USER
+  CONTACT
+  SYSTEM
+}
+
+enum MessageType {
+  TEXT
+  IMAGE
+  FILE
+  AUDIO
+  VIDEO
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+  NO_SHOW
+}
+
+enum InvitationStatus {
+  PENDING
+  ACCEPTED
+  CANCELLED
+  EXPIRED
+}

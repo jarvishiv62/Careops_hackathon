@@ -1,0 +1,129 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap");
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* VitalFlow - Health & Fitness Theme */
+
+@layer base {
+  html {
+    font-family: "Inter", system-ui, sans-serif;
+  }
+
+  body {
+    @apply bg-gradient-to-br from-teal-50 via-white to-orange-50 min-h-screen;
+  }
+}
+
+@layer components {
+  /* VitalFlow Color Palette */
+  .btn-primary {
+    @apply bg-gradient-to-r from-teal-600 to-teal-700 text-white px-6 py-3 rounded-xl hover:from-teal-700 hover:to-teal-800 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 shadow-lg hover:shadow-xl transition-all duration-200 font-semibold;
+  }
+
+  .btn-secondary {
+    @apply bg-gradient-to-r from-orange-500 to-orange-600 text-white px-6 py-3 rounded-xl hover:from-orange-600 hover:to-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 shadow-lg hover:shadow-xl transition-all duration-200 font-semibold;
+  }
+
+  .btn-outline {
+    @apply bg-white/80 backdrop-blur-sm text-teal-700 border-2 border-teal-200 px-6 py-3 rounded-xl hover:bg-teal-50 hover:border-teal-300 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 transition-all duration-200 font-semibold;
+  }
+
+  .input-field {
+    @apply w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 bg-white/80 backdrop-blur-sm transition-all duration-200;
+  }
+
+  .card {
+    @apply bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-8 hover:shadow-2xl transition-all duration-300;
+  }
+
+  .card-gradient {
+    @apply bg-gradient-to-br from-white via-teal-50/30 to-orange-50/30 rounded-2xl shadow-xl border border-white/20 p-8 hover:shadow-2xl transition-all duration-300;
+  }
+
+  /* Health & Fitness Specific Components */
+  .health-card {
+    @apply bg-gradient-to-br from-teal-500/10 to-teal-600/5 rounded-2xl border border-teal-200/50 p-6 hover:shadow-lg transition-all duration-300;
+  }
+
+  .fitness-card {
+    @apply bg-gradient-to-br from-orange-500/10 to-orange-600/5 rounded-2xl border border-orange-200/50 p-6 hover:shadow-lg transition-all duration-300;
+  }
+
+  .metric-card {
+    @apply bg-white/80 backdrop-blur-sm rounded-2xl border border-gray-200/50 p-6 hover:shadow-lg transition-all duration-300;
+  }
+
+  /* Navigation */
+  .nav-active {
+    @apply bg-gradient-to-r from-teal-500 to-teal-600 text-white shadow-lg;
+  }
+
+  .nav-inactive {
+    @apply text-gray-600 hover:bg-teal-50 hover:text-teal-700 transition-all duration-200;
+  }
+
+  /* Status Indicators */
+  .status-medical {
+    @apply bg-teal-100 text-teal-800 px-3 py-1 rounded-full text-sm font-semibold border border-teal-200;
+  }
+
+  .status-fitness {
+    @apply bg-orange-100 text-orange-800 px-3 py-1 rounded-full text-sm font-semibold border border-orange-200;
+  }
+
+  .status-urgent {
+    @apply bg-red-100 text-red-800 px-3 py-1 rounded-full text-sm font-semibold border border-red-200 animate-pulse;
+  }
+
+  /* Typography */
+  .heading-primary {
+    @apply text-3xl font-bold bg-gradient-to-r from-teal-700 to-orange-600 bg-clip-text text-transparent;
+  }
+
+  .heading-secondary {
+    @apply text-xl font-semibold text-gray-800;
+  }
+
+  .text-gradient {
+    @apply bg-gradient-to-r from-teal-600 to-orange-600 bg-clip-text text-transparent font-semibold;
+  }
+}
+
+/* Animations */
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes pulse-glow {
+  0%,
+  100% {
+    box-shadow: 0 0 20px rgba(20, 184, 166, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 40px rgba(20, 184, 166, 0.6);
+  }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+/* Glass Morphism Effect */
+.glass {
+  @apply bg-white/20 backdrop-blur-lg border border-white/30;
+}
+
+.glass-dark {
+  @apply bg-gray-900/20 backdrop-blur-lg border border-gray-700/30;
+}
