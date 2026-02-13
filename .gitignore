@@ -120,3 +120,6 @@ coverage/
 # Backup files
 *.bak
 *.backup
+
+# Setup scripts (may contain sensitive configuration)
+setup-*.js
