@@ -4,7 +4,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = "postgresql://postgres:utkarsh@localhost:5432/hack_db?schema=public"
+  url      = env("DATABASE_URL")
 }
 
 /// Workspace model for multi-tenancy

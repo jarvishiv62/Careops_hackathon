@@ -96,9 +96,11 @@ app.listen(PORT, () => {
   console.log(`🔐 Auth endpoints: http://localhost:${PORT}/api/auth`);
   console.log(`📁 Static files: http://localhost:${PORT}/uploads`);
 
-  // Start background jobs
-  bookingReminderJob.start();
-  console.log(`📅 Background jobs started`);
+  // Start background jobs with delay
+  setTimeout(() => {
+    bookingReminderJob.start();
+    console.log(`📅 Background jobs started`);
+  }, 3000); // Wait 3 seconds for database to be ready
 });
 
 export default app;
