@@ -1,11 +1,11 @@
-// backend/prisma/seed.js
+// backend/prisma/seed-unified.js
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
 
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log("🌱 Starting database seed...");
+  console.log("🌱 Starting unified database seed...");
 
   try {
     // Clean existing data
@@ -25,19 +25,6 @@ async function main() {
 
     console.log("🧹 Cleaned existing data");
 
-    // Create owner user
-    const hashedPassword = await bcrypt.hash("admin123", 10);
-    const ownerUser = await prisma.user.create({
-      data: {
-        email: "admin@vitalflow.in",
-        name: "Dr. Priya Sharma",
-        password: hashedPassword,
-        role: "ADMIN",
-      },
-    });
-
-    console.log("👤 Created owner user:", ownerUser.email);
-
     // Create workspace
     const workspace = await prisma.workspace.create({
       data: {
@@ -45,16 +32,18 @@ async function main() {
         slug: "vitalflow-wellness",
         description:
           "Premiere integrated health and fitness center offering comprehensive medical care and wellness programs",
+        isActive: true,
         settings: {
           timezone: "Asia/Kolkata",
+          currency: "INR",
           businessHours: {
-            monday: { open: "09:00", close: "17:00" },
-            tuesday: { open: "09:00", close: "17:00" },
-            wednesday: { open: "09:00", close: "17:00" },
-            thursday: { open: "09:00", close: "17:00" },
-            friday: { open: "09:00", close: "17:00" },
-            saturday: { open: "closed", close: "closed" },
-            sunday: { open: "closed", close: "closed" },
+            monday: { enabled: true, open: "09:00", close: "18:00" },
+            tuesday: { enabled: true, open: "09:00", close: "18:00" },
+            wednesday: { enabled: true, open: "09:00", close: "18:00" },
+            thursday: { enabled: true, open: "09:00", close: "18:00" },
+            friday: { enabled: true, open: "09:00", close: "18:00" },
+            saturday: { enabled: true, open: "10:00", close: "16:00" },
+            sunday: { enabled: false },
           },
         },
       },
@@ -62,531 +51,74 @@ async function main() {
 
     console.log("🏢 Created workspace:", workspace.name);
 
-    // Create workspace-user relationship (owner)
-    await prisma.workspaceUser.create({
+    // Create users with both credential sets
+    const adminPassword = await bcrypt.hash("admin123", 10);
+    const staffPassword = await bcrypt.hash("staff123", 10);
+
+    // Original admin user (admin@vitalflow.in)
+    const originalAdmin = await prisma.user.create({
       data: {
-        userId: ownerUser.id,
-        workspaceId: workspace.id,
-        role: "OWNER",
+        email: "admin@vitalflow.in",
+        name: "Dr. Priya Sharma",
+        password: adminPassword,
+        role: "ADMIN",
       },
     });
 
-    console.log("🔗 Linked user to workspace as owner");
-
-    // Create sample contacts
-    const contact1 = await prisma.contact.create({
+    // Demo admin user (admin@demo.com)
+    const demoAdmin = await prisma.user.create({
       data: {
-        workspaceId: workspace.id,
-        firstName: "Aarav",
-        lastName: "Patel",
-        email: "aarav.patel@email.com",
-        phone: "+91-98765-43210",
-        company: "Tech Solutions India",
-        tags: ["lead", "premium"],
-        createdAt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000), // 30 days ago
+        email: "admin@demo.com",
+        name: "Dr. Priya Sharma",
+        password: adminPassword,
+        role: "ADMIN",
       },
     });
 
-    const contact2 = await prisma.contact.create({
+    // Staff user (staff@demo.com)
+    const staffUser = await prisma.user.create({
       data: {
-        workspaceId: workspace.id,
-        firstName: "Ananya",
-        lastName: "Sharma",
-        email: "ananya.sharma@email.com",
-        phone: "+91-98765-43211",
-        company: "Digital Agency India",
-        tags: ["prospect"],
-        createdAt: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000), // 15 days ago
+        email: "staff@demo.com",
+        name: "Rajesh Kumar",
+        password: staffPassword,
+        role: "USER",
       },
     });
 
-    const contact3 = await prisma.contact.create({
-      data: {
-        workspaceId: workspace.id,
-        firstName: "Rohit",
-        lastName: "Verma",
-        email: "rohit.verma@email.com",
-        phone: "+91-98765-43212",
-        company: "Startup India",
-        tags: ["lead"],
-        createdAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), // 7 days ago
-      },
-    });
-
-    const contact4 = await prisma.contact.create({
-      data: {
-        workspaceId: workspace.id,
-        firstName: "Kavya",
-        lastName: "Reddy",
-        email: "kavya.reddy@email.com",
-        phone: "+91-98765-43213",
-        company: "Wellness Pvt Ltd",
-        tags: ["client", "premium"],
-        createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000), // 3 days ago
-      },
-    });
-
-    const contact5 = await prisma.contact.create({
-      data: {
-        workspaceId: workspace.id,
-        firstName: "Vikram",
-        lastName: "Singh",
-        email: "vikram.singh@email.com",
-        phone: "+91-98765-43214",
-        company: "Enterprise India",
-        tags: ["prospect"],
-        createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000), // 1 day ago
-      },
-    });
-
-    console.log("👥 Created sample contacts");
-
-    // Create conversations
-    const conversation1 = await prisma.conversation.create({
-      data: {
-        workspaceId: workspace.id,
-        contactId: contact1.id,
-        channel: "EMAIL",
-        status: "ACTIVE",
-        createdAt: new Date(Date.now() - 29 * 24 * 60 * 60 * 1000), // 29 days ago
-        updatedAt: new Date(Date.now() - 1 * 60 * 60 * 1000), // 1 hour ago
-      },
-    });
-
-    const conversation2 = await prisma.conversation.create({
-      data: {
-        workspaceId: workspace.id,
-        contactId: contact2.id,
-        channel: "SMS",
-        status: "ACTIVE",
-        createdAt: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000), // 14 days ago
-        updatedAt: new Date(Date.now() - 25 * 60 * 1000), // 25 minutes ago
-      },
-    });
-
-    const conversation3 = await prisma.conversation.create({
-      data: {
-        workspaceId: workspace.id,
-        contactId: contact3.id,
-        channel: "EMAIL",
-        status: "CLOSED",
-        createdAt: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000), // 6 days ago
-        updatedAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000), // 2 days ago
-      },
-    });
-
-    const conversation4 = await prisma.conversation.create({
-      data: {
-        workspaceId: workspace.id,
-        contactId: contact4.id,
-        channel: "CHAT",
-        status: "ACTIVE",
-        createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000), // 2 days ago
-        updatedAt: new Date(Date.now() - 30 * 60 * 1000), // 30 minutes ago
-      },
-    });
-
-    const conversation5 = await prisma.conversation.create({
-      data: {
-        workspaceId: workspace.id,
-        contactId: contact5.id,
-        channel: "EMAIL",
-        status: "ACTIVE",
-        createdAt: new Date(Date.now() - 12 * 60 * 60 * 1000), // 12 hours ago
-        updatedAt: new Date(Date.now() - 10 * 60 * 1000), // 10 minutes ago
-      },
-    });
-
-    console.log("💬 Created conversations");
-
-    // Create messages with realistic timestamps
-    await prisma.message.createMany({
+    // Add users to workspace
+    await prisma.workspaceUser.createMany({
       data: [
-        // Conversation 1 - Aarav Patel (30 days old conversation)
         {
-          conversationId: conversation1.id,
-          content:
-            "Hi, I'm interested in your medical services. Can you provide more information?",
-          senderType: "CONTACT",
-          messageType: "TEXT",
-          createdAt: new Date(Date.now() - 28 * 24 * 60 * 60 * 1000), // 28 days ago
+          userId: originalAdmin.id,
+          workspaceId: workspace.id,
+          role: "OWNER",
         },
         {
-          conversationId: conversation1.id,
-          content:
-            "Hello Aarav! Thank you for reaching out. I'd be happy to provide more information about our medical services. What specific health concerns are you interested in?",
-          senderType: "USER",
-          senderId: ownerUser.id,
-          messageType: "TEXT",
-          createdAt: new Date(Date.now() - 27 * 24 * 60 * 60 * 1000), // 27 days ago
+          userId: demoAdmin.id,
+          workspaceId: workspace.id,
+          role: "ADMIN",
         },
         {
-          conversationId: conversation1.id,
-          content:
-            "I'm particularly interested in your physiotherapy services for sports injuries.",
-          senderType: "CONTACT",
-          messageType: "TEXT",
-          createdAt: new Date(Date.now() - 26 * 24 * 60 * 60 * 1000), // 26 days ago
-        },
-        {
-          conversationId: conversation1.id,
-          content:
-            "Perfect! We specialize in sports injury rehabilitation. Would you like to schedule a free 30-minute physiotherapy consultation?",
-          senderType: "USER",
-          senderId: ownerUser.id,
-          messageType: "TEXT",
-          createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000), // 2 hours ago
-        },
-
-        // Conversation 2 - Ananya Sharma (14 days old conversation)
-        {
-          conversationId: conversation2.id,
-          content:
-            "Quick question - do you offer weekend physiotherapy sessions?",
-          senderType: "CONTACT",
-          messageType: "TEXT",
-          createdAt: new Date(Date.now() - 30 * 60 * 1000), // 30 minutes ago
-        },
-        {
-          conversationId: conversation2.id,
-          content:
-            "Hi Ananya! Yes, we do offer weekend physiotherapy sessions for our premium patients. Let me know if you'd like to discuss our wellness packages.",
-          senderType: "USER",
-          senderId: ownerUser.id,
-          messageType: "TEXT",
-          createdAt: new Date(Date.now() - 25 * 60 * 1000), // 25 minutes ago
-        },
-
-        // Conversation 3 - Rohit Verma (6 days old, closed conversation)
-        {
-          conversationId: conversation3.id,
-          content:
-            "I need help with setting up my fitness rehabilitation program.",
-          senderType: "CONTACT",
-          messageType: "TEXT",
-          createdAt: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000), // 6 days ago
-        },
-        {
-          conversationId: conversation3.id,
-          content:
-            "Hi Rohit! We can definitely help with that. What type of fitness program are you setting up?",
-          senderType: "USER",
-          senderId: ownerUser.id,
-          messageType: "TEXT",
-          createdAt: new Date(Date.now() - 5.5 * 24 * 60 * 60 * 1000), // 5.5 days ago
-        },
-        {
-          conversationId: conversation3.id,
-          content:
-            "It's a post-surgery recovery program. We need exercise therapy.",
-          senderType: "CONTACT",
-          messageType: "TEXT",
-          createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000), // 5 days ago
-        },
-        {
-          conversationId: conversation3.id,
-          content:
-            "Great! We have excellent solutions for post-surgery recovery. I'll send you our rehabilitation proposal.",
-          senderType: "USER",
-          senderId: ownerUser.id,
-          messageType: "TEXT",
-          createdAt: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000), // 4 days ago
-        },
-
-        // Conversation 4 - Kavya Reddy (2 days old conversation)
-        {
-          conversationId: conversation4.id,
-          content: "Hello! I'm interested in your premium wellness package.",
-          senderType: "CONTACT",
-          messageType: "TEXT",
-          createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000), // 2 days ago
-        },
-        {
-          conversationId: conversation4.id,
-          content:
-            "Hi Kavya! Thank you for your interest. Our premium wellness package includes priority physiotherapy and advanced health monitoring.",
-          senderType: "USER",
-          senderId: ownerUser.id,
-          messageType: "TEXT",
-          createdAt: new Date(Date.now() - 1.5 * 24 * 60 * 60 * 1000), // 1.5 days ago
-        },
-        {
-          conversationId: conversation4.id,
-          content: "That sounds perfect! How do I get started?",
-          senderType: "CONTACT",
-          messageType: "TEXT",
-          createdAt: new Date(Date.now() - 30 * 60 * 1000), // 30 minutes ago
-        },
-
-        // Conversation 5 - Vikram Singh (12 hours old conversation)
-        {
-          conversationId: conversation5.id,
-          content: "I need urgent help with my post-surgery recovery plan.",
-          senderType: "CONTACT",
-          messageType: "TEXT",
-          createdAt: new Date(Date.now() - 12 * 60 * 60 * 1000), // 12 hours ago
-        },
-        {
-          conversationId: conversation5.id,
-          content:
-            "Hi Vikram! I understand you need urgent help with your recovery. Let me connect you with our rehabilitation specialist.",
-          senderType: "USER",
-          senderId: ownerUser.id,
-          messageType: "TEXT",
-          createdAt: new Date(Date.now() - 10 * 60 * 1000), // 10 minutes ago
+          userId: staffUser.id,
+          workspaceId: workspace.id,
+          role: "MEMBER",
         },
       ],
     });
 
-    console.log("📨 Created sample messages");
+    console.log("👥 Created users:");
+    console.log("   - Original Admin: admin@vitalflow.in / admin123");
+    console.log("   - Demo Admin: admin@demo.com / admin123");
+    console.log("   - Staff: staff@demo.com / staff123");
 
-    // Create booking types
-    const bookingType1 = await prisma.bookingType.create({
-      data: {
-        workspaceId: workspace.id,
-        name: "Medical Consultation",
-        description: "Comprehensive health assessment and medical consultation",
-        duration: 30,
-        location: "Main Clinic - Room 101",
-        isActive: true,
-      },
-    });
+    // Create comprehensive demo data
+    await createComprehensiveDemoData(workspace.id);
 
-    const bookingType2 = await prisma.bookingType.create({
-      data: {
-        workspaceId: workspace.id,
-        name: "Physiotherapy Session",
-        description: "Specialized physiotherapy and rehabilitation",
-        duration: 60,
-        location: "Physiotherapy Wing - Room 201",
-        isActive: true,
-      },
-    });
-
-    console.log("📅 Created booking types");
-
-    // Create availability rules
-    await prisma.availabilityRule.createMany({
-      data: [
-        {
-          bookingTypeId: bookingType1.id,
-          dayOfWeek: 1, // Monday
-          startTime: "09:00",
-          endTime: "17:00",
-        },
-        {
-          bookingTypeId: bookingType1.id,
-          dayOfWeek: 2, // Tuesday
-          startTime: "09:00",
-          endTime: "17:00",
-        },
-        {
-          bookingTypeId: bookingType1.id,
-          dayOfWeek: 3, // Wednesday
-          startTime: "09:00",
-          endTime: "17:00",
-        },
-        {
-          bookingTypeId: bookingType1.id,
-          dayOfWeek: 4, // Thursday
-          startTime: "09:00",
-          endTime: "17:00",
-        },
-        {
-          bookingTypeId: bookingType1.id,
-          dayOfWeek: 5, // Friday
-          startTime: "09:00",
-          endTime: "17:00",
-        },
-      ],
-    });
-
-    console.log("⏰ Created availability rules");
-
-    // Create sample bookings with realistic timestamps
-    await prisma.booking.createMany({
-      data: [
-        {
-          workspaceId: workspace.id,
-          contactId: contact1.id,
-          bookingTypeId: bookingType1.id,
-          startTime: new Date(Date.now() + 24 * 60 * 60 * 1000), // Tomorrow
-          endTime: new Date(Date.now() + 24 * 60 * 60 * 1000 + 30 * 60 * 1000), // Tomorrow + 30 mins
-          status: "CONFIRMED",
-          referenceCode: "BK001",
-          createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000), // 2 days ago
-        },
-        {
-          workspaceId: workspace.id,
-          contactId: contact2.id,
-          bookingTypeId: bookingType2.id,
-          startTime: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000), // 3 days from now
-          endTime: new Date(
-            Date.now() + 3 * 24 * 60 * 60 * 1000 + 60 * 60 * 1000,
-          ), // 3 days + 1 hour
-          status: "CONFIRMED",
-          referenceCode: "BK002",
-          createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000), // 5 days ago
-        },
-        {
-          workspaceId: workspace.id,
-          contactId: contact3.id,
-          bookingTypeId: bookingType1.id,
-          startTime: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), // 7 days ago (completed)
-          endTime: new Date(
-            Date.now() - 7 * 24 * 60 * 60 * 1000 + 30 * 60 * 1000,
-          ), // 7 days ago + 30 mins
-          status: "COMPLETED",
-          referenceCode: "BK003",
-          createdAt: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000), // 10 days ago
-        },
-        {
-          workspaceId: workspace.id,
-          contactId: contact4.id,
-          bookingTypeId: bookingType2.id,
-          startTime: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000), // 14 days ago (completed)
-          endTime: new Date(
-            Date.now() - 14 * 24 * 60 * 60 * 1000 + 60 * 60 * 1000,
-          ), // 14 days ago + 1 hour
-          status: "COMPLETED",
-          referenceCode: "BK004",
-          createdAt: new Date(Date.now() - 20 * 24 * 60 * 60 * 1000), // 20 days ago
-        },
-        {
-          workspaceId: workspace.id,
-          contactId: contact5.id,
-          bookingTypeId: bookingType1.id,
-          startTime: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days from now
-          endTime: new Date(
-            Date.now() + 7 * 24 * 60 * 60 * 1000 + 30 * 60 * 1000,
-          ), // 7 days + 30 mins
-          status: "PENDING",
-          referenceCode: "BK005",
-          createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000), // 1 day ago
-        },
-        {
-          workspaceId: workspace.id,
-          contactId: contact1.id,
-          bookingTypeId: bookingType2.id,
-          startTime: new Date(Date.now() - 21 * 24 * 60 * 60 * 1000), // 21 days ago (cancelled)
-          endTime: new Date(
-            Date.now() - 21 * 24 * 60 * 60 * 1000 + 60 * 60 * 1000,
-          ), // 21 days ago + 1 hour
-          status: "CANCELLED",
-          referenceCode: "BK006",
-          createdAt: new Date(Date.now() - 25 * 24 * 60 * 60 * 1000), // 25 days ago
-        },
-      ],
-    });
-
-    console.log("📋 Created sample bookings");
-
-    // Create sample forms
-    const form1 = await prisma.form.create({
-      data: {
-        workspaceId: workspace.id,
-        name: "Patient Intake Form",
-        description: "Comprehensive health information form for new patients",
-        fields: {
-          fields: [
-            {
-              name: "fullName",
-              label: "Full Name",
-              type: "text",
-              required: true,
-            },
-            { name: "email", label: "Email", type: "email", required: true },
-            { name: "phone", label: "Phone", type: "tel", required: false },
-            {
-              name: "company",
-              label: "Company",
-              type: "text",
-              required: false,
-            },
-            {
-              name: "healthConcern",
-              label: "Primary Health Concern",
-              type: "textarea",
-              required: true,
-            },
-          ],
-        },
-        isActive: true,
-      },
-    });
-
-    console.log("📝 Created sample forms");
-
-    // Create sample inventory
-    await prisma.inventory.createMany({
-      data: [
-        {
-          workspaceId: workspace.id,
-          name: "Physiotherapy Sessions - Standard",
-          description: "Standard physiotherapy rehabilitation sessions",
-          category: "Service",
-          quantity: 100,
-          unit: "sessions",
-          price: 1250.0,
-          sku: "PHYS-STD-001",
-        },
-        {
-          workspaceId: workspace.id,
-          name: "Physiotherapy Sessions - Premium",
-          description:
-            "Premium physiotherapy with advanced rehabilitation techniques",
-          category: "Service",
-          quantity: 50,
-          unit: "sessions",
-          price: 1899.0,
-          sku: "PHYS-PREM-001",
-        },
-      ],
-    });
-
-    console.log("📦 Created sample inventory");
-
-    // Create sample integrations
-    await prisma.integration.createMany({
-      data: [
-        {
-          workspaceId: workspace.id,
-          type: "EMAIL",
-          name: "SendGrid Email Service",
-          config: {
-            provider: "sendgrid",
-            apiKey: process.env.SENDGRID_API_KEY || "demo-key",
-            fromEmail: "noreply@vitalflow.in",
-            fromName: "VitalFlow Health & Wellness",
-          },
-          isActive: true,
-        },
-        {
-          workspaceId: workspace.id,
-          type: "SMS",
-          name: "Twilio SMS Service",
-          config: {
-            provider: "twilio",
-            accountSid: process.env.TWILIO_ACCOUNT_SID || "demo-sid",
-            authToken: process.env.TWILIO_AUTH_TOKEN || "demo-token",
-            fromNumber: "+919876543210",
-          },
-          isActive: true,
-        },
-      ],
-    });
-
-    console.log("🔌 Created sample integrations");
-
-    console.log("\n✅ Database seeded successfully!");
-    console.log("\n📋 Login Credentials:");
-    console.log("   Email: admin@vitalflow.in");
-    console.log("   Password: admin123");
-    console.log("\n� Workspace: VitalFlow Health & Wellness");
-    console.log("   Role: Owner");
-    console.log(
-      "\n🚀 You can now login and test all health and fitness features!",
-    );
+    console.log("\n✅ Unified database seeding completed successfully!");
+    console.log("\n📋 Available Login Credentials:");
+    console.log("   Original Admin: admin@vitalflow.in / admin123");
+    console.log("   Demo Admin: admin@demo.com / admin123");
+    console.log("   Staff: staff@demo.com / staff123");
   } catch (error) {
     console.error("❌ Error seeding database:", error);
     throw error;
@@ -595,7 +127,849 @@ async function main() {
   }
 }
 
-main().catch((e) => {
-  console.error(e);
+async function createComprehensiveDemoData(workspaceId) {
+  console.log("🎯 Creating comprehensive demo data for hackathon showcase...");
+
+  // 1. CREATE COMPREHENSIVE BOOKING TYPES
+  const bookingTypes = await prisma.bookingType.createMany({
+    data: [
+      {
+        workspaceId,
+        name: "Medical Consultation",
+        description: "Comprehensive health assessment and medical consultation",
+        duration: 60,
+        location: "Main Clinic - Room 101",
+        isActive: true,
+      },
+      {
+        workspaceId,
+        name: "Physiotherapy Session",
+        description: "Specialized physiotherapy and rehabilitation",
+        duration: 45,
+        location: "Physiotherapy Wing - Room 201",
+        isActive: true,
+      },
+      {
+        workspaceId,
+        name: "Cardiac Consultation",
+        description: "Specialized heart health consultation and ECG",
+        duration: 90,
+        location: "Cardiology Wing - Room 301",
+        isActive: true,
+      },
+      {
+        workspaceId,
+        name: "Mental Health Counseling",
+        description: "Psychological counseling and therapy session",
+        duration: 50,
+        location: "Mental Health Wing - Room 401",
+        isActive: true,
+      },
+      {
+        workspaceId,
+        name: "Nutrition Consultation",
+        description: "Dietary planning and nutrition advice",
+        duration: 30,
+        location: "Wellness Center - Room 501",
+        isActive: true,
+      },
+    ],
+  });
+
+  console.log("📅 Created comprehensive booking types");
+
+  // 2. CREATE DIVERSE CONTACTS (PATIENTS)
+  const contacts = await prisma.contact.createMany({
+    data: [
+      {
+        workspaceId,
+        firstName: "Aarav",
+        lastName: "Patel",
+        email: "aarav.patel@email.com",
+        phone: "+91-98765-43210",
+        company: "Tech Solutions India",
+        tags: ["new", "corporate", "priority"],
+        customFields: {
+          bloodGroup: "O+",
+          allergies: "Penicillin",
+          medicalHistory: "Hypertension controlled with medication",
+          emergencyContact: "+91-98765-43211",
+        },
+      },
+      {
+        workspaceId,
+        firstName: "Ananya",
+        lastName: "Sharma",
+        email: "ananya.sharma@email.com",
+        phone: "+91-98765-43211",
+        company: "Digital Agency India",
+        tags: ["returning", "vip", "corporate"],
+        customFields: {
+          bloodGroup: "A+",
+          allergies: "None",
+          medicalHistory: "Asthma - mild",
+          emergencyContact: "+91-98765-43212",
+        },
+      },
+      {
+        workspaceId,
+        firstName: "Rohit",
+        lastName: "Verma",
+        email: "rohit.verma@email.com",
+        phone: "+91-98765-43212",
+        company: "Healthcare Pvt Ltd",
+        tags: ["corporate", "bulk", "executive"],
+        customFields: {
+          bloodGroup: "B+",
+          allergies: "Dust allergy",
+          medicalHistory: "Diabetes Type 2",
+          emergencyContact: "+91-98765-43213",
+        },
+      },
+      {
+        workspaceId,
+        firstName: "Kavya",
+        lastName: "Reddy",
+        email: "kavya.reddy@email.com",
+        phone: "+91-98765-43213",
+        tags: ["individual", "new", "student"],
+        customFields: {
+          bloodGroup: "AB+",
+          allergies: "Pollen",
+          medicalHistory: "Migraine",
+          emergencyContact: "+91-98765-43214",
+        },
+      },
+      {
+        workspaceId,
+        firstName: "Vikram",
+        lastName: "Singh",
+        email: "vikram.singh@email.com",
+        phone: "+91-98765-43214",
+        company: "Startup Solutions",
+        tags: ["startup", "tech", "founder"],
+        customFields: {
+          bloodGroup: "O-",
+          allergies: "Latex",
+          medicalHistory: "No significant medical history",
+          emergencyContact: "+91-98765-43215",
+        },
+      },
+      {
+        workspaceId,
+        firstName: "Priya",
+        lastName: "Nair",
+        email: "priya.nair@email.com",
+        phone: "+91-98765-43215",
+        tags: ["senior", "regular", "loyal"],
+        customFields: {
+          bloodGroup: "A-",
+          allergies: "Shellfish",
+          medicalHistory: "Arthritis",
+          emergencyContact: "+91-98765-43216",
+        },
+      },
+      {
+        workspaceId,
+        firstName: "Amit",
+        lastName: "Kumar",
+        email: "amit.kumar@email.com",
+        phone: "+91-98765-43216",
+        tags: ["new", "referral", "insurance"],
+        customFields: {
+          bloodGroup: "B+",
+          allergies: "None",
+          medicalHistory: "Previous knee injury",
+          emergencyContact: "+91-98765-43217",
+        },
+      },
+      {
+        workspaceId,
+        firstName: "Sneha",
+        lastName: "Joshi",
+        email: "sneha.joshi@email.com",
+        phone: "+91-98765-43217",
+        tags: ["corporate", "wellness", "preventive"],
+        customFields: {
+          bloodGroup: "O+",
+          allergies: "Seasonal allergies",
+          medicalHistory: "No major conditions",
+          emergencyContact: "+91-98765-43218",
+        },
+      },
+    ],
+  });
+
+  console.log("👥 Created diverse patient contacts");
+
+  // 3. CREATE REALISTIC BOOKINGS
+  const createdBookingTypes = await prisma.bookingType.findMany({
+    where: { workspaceId },
+  });
+  const createdContacts = await prisma.contact.findMany({
+    where: { workspaceId },
+  });
+
+  const bookings = [];
+  const now = new Date();
+
+  // Create bookings with different statuses and realistic timestamps
+  for (let i = 0; i < 25; i++) {
+    const contact = createdContacts[i % createdContacts.length];
+    const bookingType = createdBookingTypes[i % createdBookingTypes.length];
+
+    // Generate realistic booking times (past, present, future)
+    const daysOffset = Math.floor(Math.random() * 60) - 30; // -30 to +30 days
+    const startTime = new Date(now);
+    startTime.setDate(startTime.getDate() + daysOffset);
+    startTime.setHours(
+      9 + Math.floor(Math.random() * 9),
+      Math.floor(Math.random() * 60),
+      0,
+      0,
+    );
+
+    const endTime = new Date(startTime);
+    endTime.setMinutes(endTime.getMinutes() + bookingType.duration);
+
+    // Realistic status distribution
+    const statusOptions = [
+      "CONFIRMED",
+      "COMPLETED",
+      "CANCELLED",
+      "PENDING",
+      "NO_SHOW",
+    ];
+    const weights = [0.4, 0.3, 0.15, 0.1, 0.05]; // Probability weights
+    let random = Math.random();
+    let status = statusOptions[0];
+    for (let j = 0; j < weights.length; j++) {
+      random -= weights[j];
+      if (random <= 0) {
+        status = statusOptions[j];
+        break;
+      }
+    }
+
+    const booking = await prisma.booking.create({
+      data: {
+        workspaceId,
+        contactId: contact.id,
+        bookingTypeId: bookingType.id,
+        startTime,
+        endTime,
+        status,
+        referenceCode: `BK${String(i + 1).padStart(4, "0")}`,
+        notes:
+          i % 3 === 0
+            ? `Patient requires special attention for ${bookingType.name.toLowerCase()}`
+            : null,
+        metadata: {
+          source: i % 2 === 0 ? "online" : "phone",
+          paymentStatus:
+            status === "COMPLETED"
+              ? "paid"
+              : status === "CONFIRMED"
+                ? "pending"
+                : "refunded",
+          insurance: contact.tags.includes("insurance")
+            ? "covered"
+            : "self-pay",
+        },
+      },
+    });
+
+    bookings.push(booking);
+  }
+
+  console.log("📋 Created realistic bookings");
+
+  // 4. CREATE CONVERSATIONS AND MESSAGES
+  const conversations = [];
+  for (let i = 0; i < createdContacts.length; i++) {
+    const contact = createdContacts[i];
+
+    const conversation = await prisma.conversation.create({
+      data: {
+        workspaceId,
+        contactId: contact.id,
+        channel: i % 3 === 0 ? "EMAIL" : i % 3 === 1 ? "SMS" : "CHAT",
+        status: i < 2 ? "CLOSED" : "ACTIVE",
+        metadata: {
+          lastActivity: new Date(
+            Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000,
+          ),
+          priority: contact.tags.includes("priority")
+            ? "high"
+            : contact.tags.includes("vip")
+              ? "medium"
+              : "normal",
+        },
+      },
+    });
+
+    // Add realistic messages to each conversation
+    const messageCount = Math.floor(Math.random() * 8) + 2;
+    for (let j = 0; j < messageCount; j++) {
+      const isFromContact = j % 2 === 0;
+      const messageTime = new Date(
+        Date.now() - (messageCount - j) * Math.random() * 24 * 60 * 60 * 1000,
+      );
+
+      await prisma.message.create({
+        data: {
+          conversationId: conversation.id,
+          content: isFromContact
+            ? `Hi, I'd like to schedule an appointment. ${j === 0 ? "I found you through Google and I'm interested in your services." : "What are your available times next week?"}`
+            : `Thank you for reaching out! ${j === 1 ? "We'd be happy to help you schedule an appointment." : "Our team is available Monday through Friday for consultations."}`,
+          senderType: isFromContact ? "CONTACT" : "USER",
+          messageType: "TEXT",
+          createdAt: messageTime,
+        },
+      });
+    }
+
+    conversations.push(conversation);
+  }
+
+  console.log("💬 Created conversations with messages");
+
+  // 5. CREATE HEALTH FORMS
+  const forms = await prisma.form.createMany({
+    data: [
+      {
+        workspaceId,
+        name: "Patient Intake Form",
+        description: "Comprehensive health information form for new patients",
+        fields: [
+          {
+            name: "fullName",
+            label: "Full Name",
+            type: "text",
+            required: true,
+          },
+          {
+            name: "dateOfBirth",
+            label: "Date of Birth",
+            type: "date",
+            required: true,
+          },
+          {
+            name: "gender",
+            label: "Gender",
+            type: "select",
+            required: true,
+            options: ["Male", "Female", "Other"],
+          },
+          { name: "email", label: "Email", type: "email", required: true },
+          { name: "phone", label: "Phone", type: "tel", required: false },
+          {
+            name: "address",
+            label: "Address",
+            type: "textarea",
+            required: false,
+          },
+          {
+            name: "emergencyContact",
+            label: "Emergency Contact",
+            type: "text",
+            required: true,
+          },
+          {
+            name: "bloodGroup",
+            label: "Blood Group",
+            type: "select",
+            required: false,
+            options: ["A+", "A-", "B+", "B-", "O+", "O-", "AB+", "AB-"],
+          },
+          {
+            name: "allergies",
+            label: "Known Allergies",
+            type: "textarea",
+            required: false,
+          },
+          {
+            name: "medications",
+            label: "Current Medications",
+            type: "textarea",
+            required: false,
+          },
+          {
+            name: "medicalHistory",
+            label: "Medical History",
+            type: "textarea",
+            required: false,
+          },
+          {
+            name: "insuranceProvider",
+            label: "Insurance Provider",
+            type: "text",
+            required: false,
+          },
+        ],
+        settings: {
+          autoSubmit: true,
+          emailNotifications: true,
+          confirmationMessage:
+            "Thank you for submitting your intake form. We'll contact you soon.",
+        },
+        isActive: true,
+      },
+      {
+        workspaceId,
+        name: "Informed Consent Form",
+        description: "Treatment and procedure consent form",
+        fields: [
+          {
+            name: "procedureName",
+            label: "Procedure Name",
+            type: "text",
+            required: true,
+          },
+          {
+            name: "risksExplained",
+            label: "Risks Explained",
+            type: "checkbox",
+            required: true,
+          },
+          {
+            name: "benefitsExplained",
+            label: "Benefits Explained",
+            type: "checkbox",
+            required: true,
+          },
+          {
+            name: "alternativesDiscussed",
+            label: "Alternatives Discussed",
+            type: "checkbox",
+            required: true,
+          },
+          {
+            name: "consent",
+            label: "I consent to treatment",
+            type: "checkbox",
+            required: true,
+          },
+          {
+            name: "signature",
+            label: "Electronic Signature",
+            type: "signature",
+            required: true,
+          },
+        ],
+        settings: {
+          autoSubmit: true,
+          emailNotifications: true,
+        },
+        isActive: true,
+      },
+      {
+        workspaceId,
+        name: "Patient Satisfaction Survey",
+        description: "Post-treatment feedback survey",
+        fields: [
+          {
+            name: "overallExperience",
+            label: "Overall Experience",
+            type: "rating",
+            required: true,
+          },
+          {
+            name: "staffProfessionalism",
+            label: "Staff Professionalism",
+            type: "rating",
+            required: true,
+          },
+          {
+            name: "facilityCleanliness",
+            label: "Facility Cleanliness",
+            type: "rating",
+            required: true,
+          },
+          {
+            name: "waitTime",
+            label: "Wait Time Satisfaction",
+            type: "rating",
+            required: true,
+          },
+          {
+            name: "recommendation",
+            label: "Would you recommend us?",
+            type: "radio",
+            required: true,
+            options: ["Yes", "No", "Maybe"],
+          },
+          {
+            name: "comments",
+            label: "Additional Comments",
+            type: "textarea",
+            required: false,
+          },
+        ],
+        settings: {
+          autoSubmit: false,
+          emailNotifications: false,
+        },
+        isActive: true,
+      },
+      {
+        workspaceId,
+        name: "Pre-Appointment Questionnaire",
+        description: "Health screening questionnaire before appointments",
+        fields: [
+          {
+            name: "covidSymptoms",
+            label: "COVID-19 Symptoms",
+            type: "checkbox",
+            required: true,
+          },
+          {
+            name: "recentTravel",
+            label: "Recent Travel",
+            type: "checkbox",
+            required: true,
+          },
+          {
+            name: "fever",
+            label: "Current Fever",
+            type: "checkbox",
+            required: true,
+          },
+          {
+            name: "medicationChanges",
+            label: "Recent Medication Changes",
+            type: "checkbox",
+            required: true,
+          },
+          {
+            name: "additionalConcerns",
+            label: "Additional Health Concerns",
+            type: "textarea",
+            required: false,
+          },
+        ],
+        settings: {
+          autoSubmit: true,
+          emailNotifications: true,
+        },
+        isActive: true,
+      },
+    ],
+  });
+
+  console.log("📝 Created comprehensive health forms");
+
+  // 6. CREATE FORM SUBMISSIONS
+  const createdForms = await prisma.form.findMany({ where: { workspaceId } });
+
+  for (let i = 0; i < 15; i++) {
+    const form = createdForms[i % createdForms.length];
+    const contact = createdContacts[i % createdContacts.length];
+
+    await prisma.formSubmission.create({
+      data: {
+        formId: form.id,
+        data: {
+          fullName: `${contact.firstName} ${contact.lastName}`,
+          email: contact.email,
+          phone: contact.phone,
+          dateOfBirth: new Date(
+            1980 + Math.floor(Math.random() * 40),
+            Math.floor(Math.random() * 12),
+            Math.floor(Math.random() * 28) + 1,
+          )
+            .toISOString()
+            .split("T")[0],
+          bloodGroup: contact.customFields?.bloodGroup || "O+",
+          allergies: contact.customFields?.allergies || "None",
+          medicalHistory:
+            contact.customFields?.medicalHistory || "No significant history",
+          overallExperience: Math.floor(Math.random() * 2) + 4, // 4-5 rating
+          staffProfessionalism: Math.floor(Math.random() * 2) + 4,
+          facilityCleanliness: Math.floor(Math.random() * 2) + 4,
+          recommendation: ["Yes", "Yes", "Maybe"][
+            Math.floor(Math.random() * 3)
+          ],
+          comments:
+            i % 3 === 0
+              ? "Excellent service and very professional staff."
+              : "Good experience overall.",
+        },
+      },
+    });
+  }
+
+  console.log("📋 Created form submissions");
+
+  // 7. CREATE INVENTORY (MEDICAL SUPPLIES)
+  await prisma.inventory.createMany({
+    data: [
+      {
+        workspaceId,
+        name: "Disposable Gloves",
+        description: "Medical examination gloves, latex-free",
+        category: "Medical Supplies",
+        quantity: 500,
+        unit: "boxes",
+        price: 450.0,
+        sku: "DG-001",
+        metadata: {
+          supplier: "MedSupply India",
+          reorderLevel: 100,
+          expiryDate: new Date(
+            Date.now() + 365 * 24 * 60 * 60 * 1000,
+          ).toISOString(),
+        },
+      },
+      {
+        workspaceId,
+        name: "Face Masks",
+        description: "N95 respirator masks",
+        category: "Medical Supplies",
+        quantity: 200,
+        unit: "pieces",
+        price: 125.0,
+        sku: "FM-002",
+        metadata: {
+          supplier: "SafetyFirst Medical",
+          reorderLevel: 50,
+          expiryDate: new Date(
+            Date.now() + 365 * 24 * 60 * 60 * 1000,
+          ).toISOString(),
+        },
+      },
+      {
+        workspaceId,
+        name: "Blood Pressure Monitor",
+        description: "Digital automatic blood pressure monitor",
+        category: "Equipment",
+        quantity: 8,
+        unit: "units",
+        price: 3500.0,
+        sku: "BPM-003",
+        metadata: {
+          supplier: "HealthTech Solutions",
+          reorderLevel: 3,
+          warranty: "2 years",
+        },
+      },
+      {
+        workspaceId,
+        name: "Thermometer",
+        description: "Digital infrared thermometer",
+        category: "Equipment",
+        quantity: 15,
+        unit: "units",
+        price: 850.0,
+        sku: "TH-004",
+        metadata: {
+          supplier: "MedTech India",
+          reorderLevel: 5,
+          warranty: "1 year",
+        },
+      },
+      {
+        workspaceId,
+        name: "Syringes",
+        description: "Disposable insulin syringes",
+        category: "Medical Supplies",
+        quantity: 1000,
+        unit: "pieces",
+        price: 25.0,
+        sku: "SY-005",
+        metadata: {
+          supplier: "InjectCare",
+          reorderLevel: 200,
+          expiryDate: new Date(
+            Date.now() + 730 * 24 * 60 * 60 * 1000,
+          ).toISOString(),
+        },
+      },
+      {
+        workspaceId,
+        name: "Bandages",
+        description: "Sterile adhesive bandages assorted sizes",
+        category: "Medical Supplies",
+        quantity: 50,
+        unit: "boxes",
+        price: 180.0,
+        sku: "BD-006",
+        metadata: {
+          supplier: "WoundCare India",
+          reorderLevel: 15,
+          expiryDate: new Date(
+            Date.now() + 1095 * 24 * 60 * 60 * 1000,
+          ).toISOString(),
+        },
+      },
+      {
+        workspaceId,
+        name: "ECG Machine",
+        description: "12-lead ECG machine with printer",
+        category: "Equipment",
+        quantity: 2,
+        unit: "units",
+        price: 45000.0,
+        sku: "ECG-007",
+        metadata: {
+          supplier: "CardioTech Solutions",
+          reorderLevel: 1,
+          warranty: "3 years",
+          maintenance: "Quarterly calibration required",
+        },
+      },
+      {
+        workspaceId,
+        name: "Examination Table",
+        description: "Adjustable medical examination table",
+        category: "Furniture",
+        quantity: 6,
+        unit: "units",
+        price: 15000.0,
+        sku: "ET-008",
+        metadata: {
+          supplier: "MedFurniture India",
+          reorderLevel: 2,
+          warranty: "5 years",
+        },
+      },
+    ],
+  });
+
+  console.log("📦 Created medical supplies inventory");
+
+  // 8. CREATE INTEGRATIONS
+  await prisma.integration.createMany({
+    data: [
+      {
+        workspaceId,
+        type: "EMAIL",
+        name: "SendGrid Email Service",
+        config: {
+          provider: "sendgrid",
+          apiKey: "SG.demo-key-placeholder",
+          fromEmail: "noreply@vitalflow.in",
+          fromName: "VitalFlow Health & Wellness",
+          templates: {
+            appointmentConfirmation: "template-123",
+            appointmentReminder: "template-456",
+            followUp: "template-789",
+          },
+        },
+        isActive: true,
+      },
+      {
+        workspaceId,
+        type: "SMS",
+        name: "Twilio SMS Service",
+        config: {
+          provider: "twilio",
+          accountSid: "AC.demo-account-sid",
+          authToken: "demo-auth-token",
+          fromPhone: "+919876543210",
+        },
+        isActive: true,
+      },
+      {
+        workspaceId,
+        type: "PAYMENT",
+        name: "Stripe Payment Gateway",
+        config: {
+          provider: "stripe",
+          publicKey: "pk_demo_key",
+          secretKey: "sk_demo_key",
+          webhookSecret: "whsec_demo_secret",
+        },
+        isActive: true,
+      },
+      {
+        workspaceId,
+        type: "CALENDAR",
+        name: "Google Calendar Sync",
+        config: {
+          provider: "google",
+          clientId: "demo-client-id",
+          clientSecret: "demo-client-secret",
+          calendarId: "primary",
+        },
+        isActive: false, // Demo mode
+      },
+      {
+        workspaceId,
+        type: "LAB",
+        name: "Lab Results Integration",
+        config: {
+          provider: "labconnect",
+          apiKey: "demo-lab-api-key",
+          labId: "demo-lab-id",
+        },
+        isActive: false, // Demo mode
+      },
+    ],
+  });
+
+  console.log("🔌 Created service integrations");
+
+  // 9. CREATE AVAILABILITY RULES FOR BOOKING TYPES
+  for (const bookingType of createdBookingTypes) {
+    await prisma.availabilityRule.createMany({
+      data: [
+        {
+          bookingTypeId: bookingType.id,
+          dayOfWeek: 1,
+          startTime: "09:00",
+          endTime: "18:00",
+        }, // Monday
+        {
+          bookingTypeId: bookingType.id,
+          dayOfWeek: 2,
+          startTime: "09:00",
+          endTime: "18:00",
+        }, // Tuesday
+        {
+          bookingTypeId: bookingType.id,
+          dayOfWeek: 3,
+          startTime: "09:00",
+          endTime: "18:00",
+        }, // Wednesday
+        {
+          bookingTypeId: bookingType.id,
+          dayOfWeek: 4,
+          startTime: "09:00",
+          endTime: "18:00",
+        }, // Thursday
+        {
+          bookingTypeId: bookingType.id,
+          dayOfWeek: 5,
+          startTime: "09:00",
+          endTime: "18:00",
+        }, // Friday
+        {
+          bookingTypeId: bookingType.id,
+          dayOfWeek: 6,
+          startTime: "10:00",
+          endTime: "16:00",
+        }, // Saturday
+      ],
+    });
+  }
+
+  console.log("⏰ Created availability rules");
+
+  console.log("🎉 Comprehensive demo data creation completed!");
+  console.log("📊 Data Summary:");
+  console.log(`   - ${createdContacts.length} Patients with detailed profiles`);
+  console.log(`   - ${createdBookingTypes.length} Booking types`);
+  console.log(`   - ${bookings.length} Bookings with various statuses`);
+  console.log(`   - ${conversations.length} Conversations with messages`);
+  console.log(`   - ${createdForms.length} Health forms`);
+  console.log(`   - 15+ Form submissions`);
+  console.log(`   - 8+ Inventory items`);
+  console.log(`   - 5+ Service integrations`);
+}
+
+// Run the seeding
+main().catch((error) => {
+  console.error(error);
   process.exit(1);
 });

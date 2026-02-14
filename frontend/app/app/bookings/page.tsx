@@ -88,56 +88,50 @@ export default function BookingsPage() {
   const getStatusColor = (status: string) => {
     switch (status) {
       case "PENDING":
-        return "bg-yellow-100 text-yellow-800";
+        return "bg-yellow-500/20 text-yellow-400 border border-yellow-500/30";
       case "CONFIRMED":
-        return "bg-blue-100 text-blue-800";
+        return "bg-blue-500/20 text-blue-400 border border-blue-500/30";
       case "COMPLETED":
-        return "bg-green-100 text-green-800";
+        return "bg-green-500/20 text-green-400 border border-green-500/30";
       case "NO_SHOW":
-        return "bg-red-100 text-red-800";
+        return "bg-red-500/20 text-red-400 border border-red-500/30";
       case "CANCELLED":
-        return "bg-gray-100 text-gray-800";
+        return "bg-gray-500/20 text-gray-400 border border-gray-500/30";
       default:
-        return "bg-gray-100 text-gray-800";
+        return "bg-gray-500/20 text-gray-400 border border-gray-500/30";
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-8">
+    <div className="min-h-screen p-8">
       <div className="mx-auto max-w-6xl">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold">Bookings</h1>
-          <p className="mt-2 text-gray-600">Manage appointments and bookings</p>
+          <h1 className="heading-primary">Bookings</h1>
+          <p className="mt-2 text-gray-300">Manage appointments and bookings</p>
         </div>
 
         {/* Filters */}
         <div className="mb-6 flex gap-2">
           <button
             onClick={() => setFilter("today")}
-            className={`rounded-md px-4 py-2 ${
-              filter === "today"
-                ? "bg-blue-600 text-white"
-                : "bg-white text-gray-700 hover:bg-gray-50"
+            className={`rounded-xl px-4 py-2 ${
+              filter === "today" ? "btn-primary" : "btn-outline"
             }`}
           >
             Today
           </button>
           <button
             onClick={() => setFilter("upcoming")}
-            className={`rounded-md px-4 py-2 ${
-              filter === "upcoming"
-                ? "bg-blue-600 text-white"
-                : "bg-white text-gray-700 hover:bg-gray-50"
+            className={`rounded-xl px-4 py-2 ${
+              filter === "upcoming" ? "btn-primary" : "btn-outline"
             }`}
           >
             Upcoming
           </button>
           <button
             onClick={() => setFilter("all")}
-            className={`rounded-md px-4 py-2 ${
-              filter === "all"
-                ? "bg-blue-600 text-white"
-                : "bg-white text-gray-700 hover:bg-gray-50"
+            className={`rounded-xl px-4 py-2 ${
+              filter === "all" ? "btn-primary" : "btn-outline"
             }`}
           >
             All
@@ -146,22 +140,19 @@ export default function BookingsPage() {
 
         {/* Bookings List */}
         {isLoading ? (
-          <div className="text-center">Loading...</div>
+          <div className="text-center text-gray-400">Loading...</div>
         ) : bookings.length === 0 ? (
-          <div className="rounded-lg bg-white p-8 text-center shadow">
-            <p className="text-gray-500">No bookings found</p>
+          <div className="card-gradient p-8 text-center">
+            <p className="text-gray-400">No bookings found</p>
           </div>
         ) : (
           <div className="space-y-4">
             {bookings.map((booking) => (
-              <div
-                key={booking.id}
-                className="rounded-lg bg-white p-6 shadow hover:shadow-md"
-              >
+              <div key={booking.id} className="card-gradient hover-glow p-6">
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
                     <div className="flex items-center gap-3">
-                      <h3 className="text-lg font-semibold">
+                      <h3 className="text-lg font-bold text-gray-100">
                         {booking.contact.name}
                       </h3>
                       <span
@@ -173,7 +164,7 @@ export default function BookingsPage() {
                       </span>
                     </div>
 
-                    <div className="mt-2 space-y-1 text-sm text-gray-600">
+                    <div className="mt-2 space-y-1 text-sm text-gray-300">
                       <p>
                         <strong>Service:</strong> {booking.bookingType.name}
                       </p>
@@ -213,7 +204,7 @@ export default function BookingsPage() {
                     {booking.status === "PENDING" && (
                       <button
                         onClick={() => updateStatus(booking.id, "CONFIRMED")}
-                        className="rounded-md bg-blue-600 px-4 py-2 text-sm text-white hover:bg-blue-700"
+                        className="btn-primary px-4 py-2 text-sm"
                       >
                         Confirm
                       </button>
@@ -221,7 +212,7 @@ export default function BookingsPage() {
                     {booking.status === "CONFIRMED" && (
                       <button
                         onClick={() => updateStatus(booking.id, "COMPLETED")}
-                        className="rounded-md bg-green-600 px-4 py-2 text-sm text-white hover:bg-green-700"
+                        className="btn-primary px-4 py-2 text-sm"
                       >
                         Mark Complete
                       </button>
@@ -230,13 +221,13 @@ export default function BookingsPage() {
                       <>
                         <button
                           onClick={() => updateStatus(booking.id, "NO_SHOW")}
-                          className="rounded-md border border-red-300 px-4 py-2 text-sm text-red-600 hover:bg-red-50"
+                          className="btn-outline px-4 py-2 text-sm text-red-400 hover:text-red-300"
                         >
                           No Show
                         </button>
                         <button
                           onClick={() => updateStatus(booking.id, "CANCELLED")}
-                          className="rounded-md border border-gray-300 px-4 py-2 text-sm text-gray-600 hover:bg-gray-50"
+                          className="btn-outline px-4 py-2 text-sm"
                         >
                           Cancel
                         </button>

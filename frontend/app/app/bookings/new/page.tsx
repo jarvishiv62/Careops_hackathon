@@ -148,9 +148,9 @@ export default function NewBookingPage() {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+    <div className="min-h-screen">
       {/* Header */}
-      <header className="bg-white/80 backdrop-blur-sm shadow-sm border-b border-gray-200/50">
+      <header className="glass-dark border-b border-gray-800/50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center gap-4">
@@ -158,14 +158,14 @@ export default function NewBookingPage() {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => router.back()}
-                className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+                className="p-2 rounded-xl hover:bg-gray-800/50 transition-colors text-gray-400 hover:text-gray-200"
               >
                 <ArrowLeft className="w-5 h-5" />
               </motion.button>
               <motion.h1
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
-                className="text-2xl font-bold text-gray-900"
+                className="heading-primary"
               >
                 New Booking
               </motion.h1>
@@ -178,25 +178,23 @@ export default function NewBookingPage() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-white rounded-xl shadow-lg p-8"
+          className="card-gradient"
         >
           {/* Form Header */}
           <div className="flex items-center gap-3 mb-8">
-            <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
-              <Calendar className="w-6 h-6 text-purple-600" />
+            <div className="w-12 h-12 bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-xl flex items-center justify-center">
+              <Calendar className="w-6 h-6 text-purple-400" />
             </div>
             <div>
-              <h2 className="text-xl font-semibold text-gray-900">
-                Schedule Booking
-              </h2>
-              <p className="text-gray-600">
+              <h2 className="heading-secondary">Schedule Booking</h2>
+              <p className="text-gray-300">
                 Create a new appointment for your customer
               </p>
             </div>
           </div>
 
           {error && (
-            <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-600">
+            <div className="mb-6 p-4 bg-red-500/20 border border-red-500/30 rounded-xl text-red-400">
               {error}
             </div>
           )}
@@ -204,14 +202,14 @@ export default function NewBookingPage() {
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Contact Selection */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-bold text-gray-300 mb-2">
                 Customer *
               </label>
               <select
                 required
                 value={formData.contactId}
                 onChange={(e) => handleInputChange("contactId", e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                className="input-field"
               >
                 <option value="">Select a customer</option>
                 {contacts.map((contact) => (
@@ -221,12 +219,12 @@ export default function NewBookingPage() {
                 ))}
               </select>
               {contacts.length === 0 && (
-                <p className="mt-2 text-sm text-gray-500">
+                <p className="mt-2 text-sm text-gray-400">
                   No contacts found.{" "}
                   <button
                     type="button"
                     onClick={() => router.push("/app/contacts/new")}
-                    className="text-purple-600 hover:underline"
+                    className="text-purple-400 hover:text-purple-300 underline"
                   >
                     Add a contact
                   </button>
@@ -236,7 +234,7 @@ export default function NewBookingPage() {
 
             {/* Service Type */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-bold text-gray-300 mb-2">
                 Service Type *
               </label>
               <select
@@ -245,7 +243,7 @@ export default function NewBookingPage() {
                 onChange={(e) =>
                   handleInputChange("bookingTypeId", e.target.value)
                 }
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                className="input-field"
               >
                 <option value="">Select a service</option>
                 {bookingTypes.map((type) => (
@@ -256,12 +254,12 @@ export default function NewBookingPage() {
                 ))}
               </select>
               {bookingTypes.length === 0 && (
-                <p className="mt-2 text-sm text-gray-500">
+                <p className="mt-2 text-sm text-gray-400">
                   No booking types available.{" "}
                   <button
                     type="button"
                     onClick={() => router.push("/app/booking-types")}
-                    className="text-purple-600 hover:underline"
+                    className="text-purple-400 hover:text-purple-300 underline"
                   >
                     Configure booking types
                   </button>
@@ -272,7 +270,7 @@ export default function NewBookingPage() {
             {/* Date and Time */}
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-bold text-gray-300 mb-2">
                   Date *
                 </label>
                 <input
@@ -281,11 +279,11 @@ export default function NewBookingPage() {
                   value={formData.date}
                   onChange={(e) => handleInputChange("date", e.target.value)}
                   min={new Date().toISOString().split("T")[0]}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  className="input-field"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-bold text-gray-300 mb-2">
                   Time *
                 </label>
                 <select
@@ -294,7 +292,7 @@ export default function NewBookingPage() {
                   onChange={(e) =>
                     handleInputChange("startTime", e.target.value)
                   }
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  className="input-field"
                 >
                   <option value="">Select time</option>
                   {generateTimeSlots().map((time) => (
@@ -308,11 +306,11 @@ export default function NewBookingPage() {
 
             {/* Booking Preview */}
             {selectedBookingType && formData.date && formData.startTime && (
-              <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
-                <h3 className="text-sm font-medium text-purple-900 mb-2">
+              <div className="bg-purple-500/20 border border-purple-500/30 rounded-xl p-4">
+                <h3 className="text-sm font-bold text-purple-300 mb-2">
                   Booking Preview
                 </h3>
-                <div className="space-y-1 text-sm text-purple-800">
+                <div className="space-y-1 text-sm text-purple-200">
                   <div className="flex items-center gap-2">
                     <Calendar className="w-4 h-4" />
                     <span>
@@ -342,7 +340,7 @@ export default function NewBookingPage() {
                 value={formData.notes}
                 onChange={(e) => handleInputChange("notes", e.target.value)}
                 rows={4}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                className="input-field resize-none"
                 placeholder="Additional notes about this booking..."
               />
             </div>
@@ -352,7 +350,7 @@ export default function NewBookingPage() {
               <button
                 type="button"
                 onClick={() => router.push("/app/bookings")}
-                className="flex-1 px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors flex items-center justify-center gap-2"
+                className="flex-1 btn-outline flex items-center justify-center gap-2"
               >
                 <X className="w-4 h-4" />
                 Cancel
@@ -360,7 +358,7 @@ export default function NewBookingPage() {
               <button
                 type="submit"
                 disabled={isLoading}
-                className="flex-1 px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:bg-purple-300 transition-colors flex items-center justify-center gap-2"
+                className="flex-1 btn-primary flex items-center justify-center gap-2"
               >
                 <Save className="w-4 h-4" />
                 {isLoading ? "Creating..." : "Create Booking"}

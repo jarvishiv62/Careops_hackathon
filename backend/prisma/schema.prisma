@@ -30,6 +30,7 @@ model Workspace {
   automations    Automation[]
   notifications  Notification[]
   invitations    Invitation[]
+  serviceRequests ServiceRequest[]
 
   @@map("workspaces")
 }
@@ -426,4 +427,32 @@ enum InvitationStatus {
   ACCEPTED
   CANCELLED
   EXPIRED
+}
+
+/// Service Request model for public service requests
+model ServiceRequest {
+  id             String   @id @default(cuid())
+  workspaceId    String?  /// Optional workspace assignment
+  referenceId    String   @unique
+  firstName      String
+  lastName       String
+  email          String
+  phone          String
+  company        String?
+  address        String?
+  serviceType    String
+  urgency        String
+  preferredDate  DateTime?
+  preferredTime  String?
+  message        String
+  additionalInfo String?
+  status         String   @default("PENDING")
+  staffNotes     String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  /// Relations
+  workspace      Workspace? @relation(fields: [workspaceId], references: [id], onDelete: SetNull)
+
+  @@map("service_requests")
 }

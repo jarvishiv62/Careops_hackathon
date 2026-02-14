@@ -39,22 +39,22 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4">
-      <div className="w-full max-w-md space-y-8 rounded-lg bg-white p-8 shadow-md">
+    <div className="flex min-h-screen items-center justify-center px-4">
+      <div className="w-full max-w-md space-y-8 card-gradient p-8 shadow-2xl">
         <div className="text-center">
-          <h1 className="text-3xl font-bold">Create Account</h1>
-          <p className="mt-2 text-gray-600">Get started with CareOps</p>
+          <h1 className="heading-primary mb-2">Create Account</h1>
+          <p className="text-gray-300">Get started with VitalFlow</p>
         </div>
 
         {error && (
-          <div className="rounded-md bg-red-50 p-4 text-sm text-red-600">
+          <div className="rounded-lg bg-red-500/20 border border-red-500/30 p-4 text-sm text-red-400">
             {error}
           </div>
         )}
 
         <form onSubmit={handleSubmit} className="mt-8 space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700">
+            <label className="block text-sm font-bold text-gray-300">
               Your Name *
             </label>
             <input
@@ -64,12 +64,12 @@ export default function RegisterPage() {
               onChange={(e) =>
                 setFormData({ ...formData, name: e.target.value })
               }
-              className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-blue-500"
+              className="input-field mt-2"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700">
+            <label className="block text-sm font-bold text-gray-300">
               Email Address *
             </label>
             <input
@@ -79,12 +79,12 @@ export default function RegisterPage() {
               onChange={(e) =>
                 setFormData({ ...formData, email: e.target.value })
               }
-              className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-blue-500"
+              className="input-field mt-2"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700">
+            <label className="block text-sm font-bold text-gray-300">
               Password *
             </label>
             <input
@@ -95,19 +95,19 @@ export default function RegisterPage() {
               onChange={(e) =>
                 setFormData({ ...formData, password: e.target.value })
               }
-              className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-blue-500"
+              className="input-field mt-2"
             />
-            <p className="mt-1 text-xs text-gray-500">
+            <p className="mt-1 text-xs text-gray-400">
               At least 8 characters with uppercase, lowercase, and numbers
             </p>
           </div>
 
-          <div className="border-t pt-4">
-            <h3 className="font-medium text-gray-900">Business Information</h3>
+          <div className="border-t border-gray-700/50 pt-4">
+            <h3 className="font-bold text-gray-100">Business Information</h3>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700">
+            <label className="block text-sm font-bold text-gray-300">
               Business Name *
             </label>
             <input
@@ -117,12 +117,12 @@ export default function RegisterPage() {
               onChange={(e) =>
                 setFormData({ ...formData, businessName: e.target.value })
               }
-              className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-blue-500"
+              className="input-field mt-2"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700">
+            <label className="block text-sm font-bold text-gray-300">
               Business Email *
             </label>
             <input
@@ -132,12 +132,12 @@ export default function RegisterPage() {
               onChange={(e) =>
                 setFormData({ ...formData, contactEmail: e.target.value })
               }
-              className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-blue-500"
+              className="input-field mt-2"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700">
+            <label className="block text-sm font-bold text-gray-300">
               Address (Optional)
             </label>
             <input
@@ -146,12 +146,12 @@ export default function RegisterPage() {
               onChange={(e) =>
                 setFormData({ ...formData, address: e.target.value })
               }
-              className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-blue-500"
+              className="input-field mt-2"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700">
+            <label className="block text-sm font-bold text-gray-300">
               Timezone
             </label>
             <select
@@ -159,7 +159,7 @@ export default function RegisterPage() {
               onChange={(e) =>
                 setFormData({ ...formData, timezone: e.target.value })
               }
-              className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-blue-500"
+              className="input-field mt-2"
             >
               <option value="UTC">UTC</option>
               <option value="America/New_York">Eastern Time</option>
@@ -172,15 +172,18 @@ export default function RegisterPage() {
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full rounded-md bg-blue-600 py-2 text-white hover:bg-blue-700 disabled:bg-blue-300"
+            className="btn-primary w-full disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isLoading ? "Creating account..." : "Create Account"}
           </button>
         </form>
 
         <div className="text-center text-sm">
-          <span className="text-gray-600">Already have an account? </span>
-          <Link href="/login" className="text-blue-600 hover:underline">
+          <span className="text-gray-400">Already have an account? </span>
+          <Link
+            href="/login"
+            className="text-gradient font-bold hover:underline"
+          >
             Sign in
           </Link>
         </div>

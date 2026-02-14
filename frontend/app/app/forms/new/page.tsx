@@ -121,9 +121,9 @@ export default function NewFormPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+    <div className="min-h-screen">
       {/* Header */}
-      <header className="bg-white/80 backdrop-blur-sm shadow-sm border-b border-gray-200/50">
+      <header className="glass-dark border-b border-gray-800/50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center gap-4">
@@ -131,14 +131,14 @@ export default function NewFormPage() {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => router.back()}
-                className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+                className="p-2 rounded-xl hover:bg-gray-800/50 transition-colors text-gray-400 hover:text-gray-200"
               >
                 <ArrowLeft className="w-5 h-5" />
               </motion.button>
               <motion.h1
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
-                className="text-2xl font-bold text-gray-900"
+                className="heading-primary"
               >
                 New Form
               </motion.h1>
@@ -151,25 +151,23 @@ export default function NewFormPage() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-white rounded-xl shadow-lg p-8"
+          className="card-gradient"
         >
           {/* Form Header */}
           <div className="flex items-center gap-3 mb-8">
-            <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center">
-              <FileText className="w-6 h-6 text-orange-600" />
+            <div className="w-12 h-12 bg-gradient-to-r from-orange-500/20 to-pink-500/20 rounded-xl flex items-center justify-center">
+              <FileText className="w-6 h-6 text-orange-400" />
             </div>
             <div>
-              <h2 className="text-xl font-semibold text-gray-900">
-                Form Builder
-              </h2>
-              <p className="text-gray-600">
+              <h2 className="heading-secondary">Form Builder</h2>
+              <p className="text-gray-300">
                 Create a custom form for data collection
               </p>
             </div>
           </div>
 
           {error && (
-            <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-600">
+            <div className="mb-6 p-4 bg-red-500/20 border border-red-500/30 rounded-xl text-red-400">
               {error}
             </div>
           )}
@@ -178,7 +176,7 @@ export default function NewFormPage() {
             {/* Basic Information */}
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-bold text-gray-300 mb-2">
                   Form Name *
                 </label>
                 <input
@@ -188,13 +186,13 @@ export default function NewFormPage() {
                   onChange={(e) =>
                     setFormData((prev) => ({ ...prev, name: e.target.value }))
                   }
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                  className="input-field"
                   placeholder="Contact Form"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-bold text-gray-300 mb-2">
                   Description
                 </label>
                 <textarea
@@ -206,7 +204,7 @@ export default function NewFormPage() {
                     }))
                   }
                   rows={3}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                  className="input-field resize-none"
                   placeholder="Form for collecting customer inquiries"
                 />
               </div>
@@ -215,13 +213,11 @@ export default function NewFormPage() {
             {/* Form Fields */}
             <div>
               <div className="flex justify-between items-center mb-4">
-                <h3 className="text-lg font-medium text-gray-900">
-                  Form Fields
-                </h3>
+                <h3 className="heading-secondary">Form Fields</h3>
                 <button
                   type="button"
                   onClick={addField}
-                  className="bg-orange-600 text-white px-3 py-1 rounded-lg hover:bg-orange-700 flex items-center gap-1 text-sm"
+                  className="btn-primary flex items-center gap-1 text-sm"
                 >
                   <Plus className="w-4 h-4" />
                   Add Field
@@ -232,7 +228,7 @@ export default function NewFormPage() {
                 {formData.fields.map((field, index) => (
                   <div
                     key={field.id}
-                    className="border border-gray-200 rounded-lg p-4"
+                    className="border border-gray-700/50 rounded-xl p-4 bg-black/40"
                   >
                     <div className="flex justify-between items-start mb-3">
                       <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-3">
@@ -242,7 +238,7 @@ export default function NewFormPage() {
                           onChange={(e) =>
                             updateField(field.id, { label: e.target.value })
                           }
-                          className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                          className="input-field px-3 py-2"
                           placeholder="Field Label"
                         />
                         <input
@@ -251,7 +247,7 @@ export default function NewFormPage() {
                           onChange={(e) =>
                             updateField(field.id, { name: e.target.value })
                           }
-                          className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                          className="input-field px-3 py-2"
                           placeholder="field_name"
                         />
                         <select
@@ -261,7 +257,7 @@ export default function NewFormPage() {
                               type: e.target.value as FormField["type"],
                             })
                           }
-                          className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                          className="input-field px-3 py-2"
                         >
                           {fieldTypes.map((type) => (
                             <option key={type.value} value={type.value}>
@@ -273,7 +269,7 @@ export default function NewFormPage() {
                       <button
                         type="button"
                         onClick={() => removeField(field.id)}
-                        className="ml-3 text-red-600 hover:text-red-800"
+                        className="ml-3 text-red-400 hover:text-red-300"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
@@ -303,7 +299,7 @@ export default function NewFormPage() {
               <button
                 type="button"
                 onClick={() => router.push("/app/forms")}
-                className="flex-1 px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors flex items-center justify-center gap-2"
+                className="flex-1 btn-outline flex items-center justify-center gap-2"
               >
                 <X className="w-4 h-4" />
                 Cancel
@@ -311,7 +307,7 @@ export default function NewFormPage() {
               <button
                 type="submit"
                 disabled={isLoading}
-                className="flex-1 px-6 py-3 bg-orange-600 text-white rounded-lg hover:bg-orange-700 disabled:bg-orange-300 transition-colors flex items-center justify-center gap-2"
+                className="flex-1 btn-primary flex items-center justify-center gap-2"
               >
                 <Save className="w-4 h-4" />
                 {isLoading ? "Creating..." : "Create Form"}

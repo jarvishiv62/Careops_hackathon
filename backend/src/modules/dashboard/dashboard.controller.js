@@ -2,7 +2,7 @@ import dashboardService from "./dashboard.service.js";
 
 const getDashboardData = async (req, res) => {
   try {
-    const { workspaceId } = req;
+    const { workspaceId, userRole } = req;
 
     if (!workspaceId) {
       return res.status(400).json({
@@ -13,10 +13,10 @@ const getDashboardData = async (req, res) => {
 
     const [dashboardStats, analyticsData, activityFeed, workspaceHealth] =
       await Promise.all([
-        dashboardService.getDashboardStats(workspaceId),
-        dashboardService.getAnalyticsData(workspaceId, "30d"),
-        dashboardService.getActivityFeed(workspaceId, 10),
-        dashboardService.getWorkspaceHealth(workspaceId),
+        dashboardService.getDashboardStats(workspaceId, userRole),
+        dashboardService.getAnalyticsData(workspaceId, "30d", userRole),
+        dashboardService.getActivityFeed(workspaceId, 10, userRole),
+        dashboardService.getWorkspaceHealth(workspaceId, userRole),
       ]);
 
     res.json({

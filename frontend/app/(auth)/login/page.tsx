@@ -59,15 +59,15 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50">
-      <div className="w-full max-w-md space-y-8 rounded-lg bg-white p-8 shadow-md">
+    <div className="flex min-h-screen items-center justify-center">
+      <div className="w-full max-w-md space-y-8 card-gradient p-8 shadow-2xl">
         <div className="text-center">
-          <h1 className="text-3xl font-bold">CareOps</h1>
-          <p className="mt-2 text-gray-600">Sign in to your account</p>
+          <h1 className="heading-primary mb-2">VitalFlow</h1>
+          <p className="text-gray-300">Sign in to your account</p>
         </div>
 
         {error && (
-          <div className="rounded-md bg-red-50 p-4 text-sm text-red-600">
+          <div className="rounded-lg bg-red-500/20 border border-red-500/30 p-4 text-sm text-red-400">
             {error}
           </div>
         )}
@@ -76,7 +76,7 @@ export default function LoginPage() {
           <div>
             <label
               htmlFor="email"
-              className="block text-sm font-medium text-gray-700"
+              className="block text-sm font-bold text-gray-300"
             >
               Email address
             </label>
@@ -86,14 +86,14 @@ export default function LoginPage() {
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-blue-500"
+              className="input-field mt-2"
             />
           </div>
 
           <div>
             <label
               htmlFor="password"
-              className="block text-sm font-medium text-gray-700"
+              className="block text-sm font-bold text-gray-300"
             >
               Password
             </label>
@@ -103,7 +103,7 @@ export default function LoginPage() {
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-blue-500"
+              className="input-field mt-2"
             />
           </div>
 
@@ -113,11 +113,11 @@ export default function LoginPage() {
               type="checkbox"
               checked={rememberMe}
               onChange={(e) => setRememberMe(e.target.checked)}
-              className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+              className="h-4 w-4 rounded border-gray-600 bg-gray-800 text-purple-500 focus:ring-purple-500"
             />
             <label
               htmlFor="remember-me"
-              className="ml-2 block text-sm text-gray-700"
+              className="ml-2 block text-sm text-gray-300"
             >
               Remember me
             </label>
@@ -126,15 +126,18 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full rounded-md bg-blue-600 py-2 text-white hover:bg-blue-700 disabled:bg-blue-300"
+            className="btn-primary w-full disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isLoading ? "Signing in..." : "Sign in"}
           </button>
         </form>
 
         <div className="text-center text-sm">
-          <span className="text-gray-600">Don't have an account? </span>
-          <Link href="/register" className="text-blue-600 hover:underline">
+          <span className="text-gray-400">Don't have an account? </span>
+          <Link
+            href="/register"
+            className="text-gradient font-bold hover:underline"
+          >
             Create account
           </Link>
         </div>

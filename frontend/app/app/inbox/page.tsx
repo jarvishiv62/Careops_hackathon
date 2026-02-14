@@ -388,21 +388,21 @@ export default function InboxPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+    <div className="min-h-screen">
       {/* Header */}
-      <header className="bg-white/80 backdrop-blur-sm shadow-sm border-b border-gray-200/50 sticky top-0 z-40">
+      <header className="glass-dark border-b border-gray-800/50 sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-4">
               <motion.h1
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
-                className="text-2xl font-bold text-gray-900 flex items-center"
+                className="heading-primary flex items-center"
               >
-                <MessageSquare className="w-7 h-7 mr-2 text-blue-600" />
+                <MessageSquare className="w-7 h-7 mr-2 text-purple-400" />
                 Inbox
                 {unreadCount > 0 && (
-                  <span className="ml-2 px-2 py-1 bg-red-500 text-white text-xs rounded-full">
+                  <span className="ml-2 px-2 py-1 bg-gradient-to-r from-red-500 to-pink-500 text-white text-xs rounded-full shadow-lg shadow-red-500/25">
                     {unreadCount}
                   </span>
                 )}
@@ -413,14 +413,14 @@ export default function InboxPage() {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={fetchConversations}
-                className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+                className="p-2 text-gray-400 hover:text-gray-200 hover:bg-gray-800/50 rounded-xl transition-colors"
               >
                 <RefreshCw className="w-5 h-5" />
               </motion.button>
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+                className="p-2 text-gray-400 hover:text-gray-200 hover:bg-gray-800/50 rounded-xl transition-colors"
               >
                 <Settings className="w-5 h-5" />
               </motion.button>
@@ -431,17 +431,17 @@ export default function InboxPage() {
 
       <div className="flex h-[calc(100vh-4rem)]">
         {/* Conversation List Sidebar */}
-        <div className="w-96 bg-white/60 backdrop-blur-sm border-r border-gray-200/50 flex flex-col">
+        <div className="w-96 glass-dark border-r border-gray-800/50 flex flex-col">
           {/* Search and Filters */}
-          <div className="p-4 border-b border-gray-200/50">
+          <div className="p-4 border-b border-gray-800/50">
             <div className="relative mb-3">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 w-5 h-5" />
               <input
                 type="text"
                 placeholder="Search conversations..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 bg-white/80 backdrop-blur-sm border border-gray-200/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent"
+                className="input-field pl-10"
               />
             </div>
 
@@ -450,7 +450,7 @@ export default function InboxPage() {
                 <select
                   value={filterStatus}
                   onChange={(e) => setFilterStatus(e.target.value)}
-                  className="px-3 py-1.5 bg-white/80 backdrop-blur-sm border border-gray-200/50 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                  className="input-field px-3 py-1.5 text-sm"
                 >
                   <option value="all">All Status</option>
                   <option value="ACTIVE">Active</option>
@@ -460,7 +460,7 @@ export default function InboxPage() {
                 <select
                   value={filterChannel}
                   onChange={(e) => setFilterChannel(e.target.value)}
-                  className="px-3 py-1.5 bg-white/80 backdrop-blur-sm border border-gray-200/50 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                  className="input-field px-3 py-1.5 text-sm"
                 >
                   <option value="all">All Channels</option>
                   <option value="EMAIL">Email</option>
@@ -478,8 +478,8 @@ export default function InboxPage() {
                 <RefreshCw className="w-6 h-6 animate-spin text-gray-400" />
               </div>
             ) : conversations.length === 0 ? (
-              <div className="flex flex-col items-center justify-center h-32 text-gray-500">
-                <MessageSquare className="w-12 h-12 mb-2 text-gray-300" />
+              <div className="flex flex-col items-center justify-center h-32 text-gray-400">
+                <MessageSquare className="w-12 h-12 mb-2 text-gray-500" />
                 <p>No conversations found</p>
               </div>
             ) : (
@@ -497,8 +497,8 @@ export default function InboxPage() {
                       onClick={() => setSelectedConversation(conversation)}
                       className={`p-4 rounded-xl cursor-pointer transition-all ${
                         isSelected
-                          ? "bg-gradient-to-r from-blue-500/20 to-purple-500/20 border border-blue-200/50 shadow-lg"
-                          : "bg-white/40 hover:bg-white/60 border border-gray-200/30 hover:shadow-md"
+                          ? "bg-gradient-to-r from-purple-500/20 to-pink-500/20 border border-purple-500/30 shadow-lg shadow-purple-500/20"
+                          : "bg-gray-800/30 hover:bg-gray-800/50 border border-gray-700/50 hover:shadow-md"
                       }`}
                     >
                       <div className="flex items-start justify-between mb-2">
@@ -509,18 +509,18 @@ export default function InboxPage() {
                             <ChannelIcon className="w-5 h-5" />
                           </div>
                           <div className="flex-1 min-w-0">
-                            <h3 className="font-semibold text-gray-900 truncate">
+                            <h3 className="font-bold text-gray-100 truncate">
                               {getContactName(conversation.contact)}
                             </h3>
                             {conversation.contact.email && (
-                              <p className="text-xs text-gray-500 truncate">
+                              <p className="text-xs text-gray-400 truncate">
                                 {conversation.contact.email}
                               </p>
                             )}
                           </div>
                         </div>
                         <div className="flex flex-col items-end space-y-1">
-                          <span className="text-xs text-gray-500">
+                          <span className="text-xs text-gray-400">
                             {formatMessageTime(conversation.updatedAt)}
                           </span>
                           <div
@@ -530,7 +530,7 @@ export default function InboxPage() {
                       </div>
 
                       {conversation.lastMessage && (
-                        <p className="text-sm text-gray-600 line-clamp-2 mb-2">
+                        <p className="text-sm text-gray-300 line-clamp-2 mb-2">
                           {conversation.lastMessage.content}
                         </p>
                       )}
@@ -564,15 +564,15 @@ export default function InboxPage() {
         </div>
 
         {/* Message Thread */}
-        <div className="flex-1 flex flex-col bg-white/40 backdrop-blur-sm">
+        <div className="flex-1 flex flex-col glass-dark">
           {selectedConversation ? (
             <>
               {/* Conversation Header */}
-              <div className="bg-white/80 backdrop-blur-sm border-b border-gray-200/50 p-4">
+              <div className="bg-gray-900/50 backdrop-blur-sm border-b border-gray-800/50 p-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-4">
                     <div
-                      className={`w-12 h-12 bg-gradient-to-r ${channelColors[selectedConversation.channel]} rounded-full flex items-center justify-center text-white`}
+                      className={`w-12 h-12 bg-gradient-to-r ${channelColors[selectedConversation.channel]} rounded-full flex items-center justify-center text-white shadow-lg`}
                     >
                       {React.createElement(
                         getChannelIcon(selectedConversation.channel),
@@ -580,19 +580,19 @@ export default function InboxPage() {
                       )}
                     </div>
                     <div>
-                      <h2 className="text-lg font-semibold text-gray-900">
+                      <h2 className="heading-secondary">
                         {getContactName(selectedConversation.contact)}
                       </h2>
-                      <div className="flex items-center space-x-3 text-sm text-gray-600">
+                      <div className="flex items-center space-x-3 text-sm text-gray-300">
                         {selectedConversation.contact.email && (
                           <span className="flex items-center">
-                            <Mail className="w-4 h-4 mr-1" />
+                            <Mail className="w-4 h-4 mr-1 text-gray-400" />
                             {selectedConversation.contact.email}
                           </span>
                         )}
                         {selectedConversation.contact.phone && (
                           <span className="flex items-center">
-                            <Phone className="w-4 h-4 mr-1" />
+                            <Phone className="w-4 h-4 mr-1 text-gray-400" />
                             {selectedConversation.contact.phone}
                           </span>
                         )}
@@ -603,7 +603,7 @@ export default function InboxPage() {
                     <select
                       value={selectedConversation.status}
                       onChange={(e) => updateConversationStatus(e.target.value)}
-                      className="px-3 py-1.5 bg-white/80 backdrop-blur-sm border border-gray-200/50 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                      className="input-field px-3 py-1.5 text-sm"
                     >
                       <option value="ACTIVE">Active</option>
                       <option value="CLOSED">Closed</option>
@@ -612,7 +612,7 @@ export default function InboxPage() {
                     <motion.button
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
-                      className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+                      className="p-2 text-gray-400 hover:text-gray-200 hover:bg-gray-800/50 rounded-xl transition-colors"
                     >
                       <MoreVertical className="w-5 h-5" />
                     </motion.button>
@@ -635,8 +635,8 @@ export default function InboxPage() {
                       <div
                         className={`max-w-lg px-4 py-3 rounded-2xl ${
                           message.senderType === "USER"
-                            ? "bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg"
-                            : "bg-white/80 backdrop-blur-sm text-gray-900 border border-gray-200/50 shadow-md"
+                            ? "bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg shadow-purple-500/50"
+                            : "bg-black/60 backdrop-blur-xl text-gray-100 border border-purple-500/30 shadow-md"
                         }`}
                       >
                         <p className="whitespace-pre-wrap break-words">
@@ -650,10 +650,10 @@ export default function InboxPage() {
                               <div
                                 className={`flex items-center text-xs px-2 py-1 rounded-full ${
                                   message.sentiment.sentiment === "positive"
-                                    ? "bg-green-100 text-green-700"
+                                    ? "bg-green-500/20 text-green-400 border border-green-500/30"
                                     : message.sentiment.sentiment === "negative"
-                                      ? "bg-red-100 text-red-700"
-                                      : "bg-gray-100 text-gray-700"
+                                      ? "bg-red-500/20 text-red-400 border border-red-500/30"
+                                      : "bg-gray-500/20 text-gray-400 border border-gray-500/30"
                                 }`}
                               >
                                 {message.sentiment.sentiment === "positive" &&
@@ -667,7 +667,7 @@ export default function InboxPage() {
                                 </span>
                               </div>
                               {message.sentiment.confidence > 0.7 && (
-                                <span className="text-xs text-gray-500">
+                                <span className="text-xs text-gray-400">
                                   {Math.round(
                                     message.sentiment.confidence * 100,
                                   )}
@@ -756,7 +756,7 @@ export default function InboxPage() {
                       value={message}
                       onChange={(e) => setMessage(e.target.value)}
                       placeholder="Type your message..."
-                      className="w-full px-4 py-3 bg-white/80 backdrop-blur-sm border border-gray-200/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent resize-none"
+                      className="input-field resize-none"
                       rows={2}
                     />
                   </div>
@@ -765,7 +765,7 @@ export default function InboxPage() {
                       type="button"
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
-                      className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+                      className="p-2 text-gray-400 hover:text-gray-200 hover:bg-gray-800/50 rounded-xl transition-colors"
                     >
                       <Paperclip className="w-5 h-5" />
                     </motion.button>
@@ -775,7 +775,7 @@ export default function InboxPage() {
                       whileTap={{ scale: 0.95 }}
                       onClick={fetchSmartReplies}
                       disabled={isLoadingSmartReplies || !message.trim()}
-                      className="p-2 text-purple-500 hover:text-purple-700 hover:bg-purple-100 rounded-lg transition-colors disabled:opacity-50"
+                      className="p-2 text-purple-400 hover:text-purple-300 hover:bg-purple-500/20 rounded-xl transition-colors disabled:opacity-50"
                     >
                       {isLoadingSmartReplies ? (
                         <RefreshCw className="w-5 h-5 animate-spin" />
@@ -788,7 +788,7 @@ export default function InboxPage() {
                       disabled={isSending || !message.trim()}
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
-                      className="px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl hover:from-blue-600 hover:to-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg"
+                      className="btn-primary px-4 py-2 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       {isSending ? (
                         <RefreshCw className="w-5 h-5 animate-spin" />

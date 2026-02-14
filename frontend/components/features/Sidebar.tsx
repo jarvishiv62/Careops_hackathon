@@ -13,13 +13,9 @@ import {
   Menu,
   X,
   ChevronDown,
-  Building,
   MessageSquare,
-  BarChart3,
   HeartPulse,
-  Activity,
-  Stethoscope,
-  Dumbbell,
+  Mail,
 } from "lucide-react";
 import { useAuth } from "../../lib/auth";
 
@@ -31,125 +27,153 @@ interface SidebarItem {
   children?: SidebarItem[];
 }
 
-const sidebarItems: SidebarItem[] = [
-  {
-    title: "Dashboard",
-    href: "/app/dashboard",
-    icon: LayoutDashboard,
-  },
-  {
-    title: "Patients",
-    href: "/app/contacts",
-    icon: HeartPulse,
-    children: [
+export default function Sidebar() {
+  const router = useRouter();
+  const pathname = usePathname();
+  const { user, workspace } = useAuth();
+  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [expandedItems, setExpandedItems] = useState<string[]>([]);
+
+  // Role-based navigation items
+  const getSidebarItems = (): SidebarItem[] => {
+    const userRole = workspace?.userRole || user?.role;
+
+    const baseItems = [
       {
-        title: "All Patients",
+        title: "Dashboard",
+        href: "/app/dashboard",
+        icon: LayoutDashboard,
+      },
+    ];
+
+    const staffItems = [
+      ...baseItems,
+      {
+        title: "My Patients",
         href: "/app/contacts",
-        icon: Users,
+        icon: HeartPulse,
+        children: [
+          {
+            title: "All Patients",
+            href: "/app/contacts",
+            icon: Users,
+          },
+          {
+            title: "New Patient",
+            href: "/app/contacts/new",
+            icon: HeartPulse,
+          },
+        ],
       },
       {
-        title: "New Patient",
-        href: "/app/contacts/new",
-        icon: HeartPulse,
+        title: "My Appointments",
+        href: "/app/bookings",
+        icon: Calendar,
+        children: [
+          {
+            title: "My Schedule",
+            href: "/app/bookings/my",
+            icon: Calendar,
+          },
+          {
+            title: "New Appointment",
+            href: "/app/bookings/new",
+            icon: Calendar,
+          },
+        ],
       },
-    ],
-  },
-  {
-    title: "Appointments",
-    href: "/app/bookings",
-    icon: Calendar,
-    children: [
+      {
+        title: "Health Forms",
+        href: "/app/forms",
+        icon: FileText,
+        children: [
+          {
+            title: "Patient Forms",
+            href: "/app/forms",
+            icon: FileText,
+          },
+        ],
+      },
+      {
+        title: "Conversations",
+        href: "/app/inbox",
+        icon: MessageSquare,
+        children: [
+          {
+            title: "All Conversations",
+            href: "/app/inbox",
+            icon: MessageSquare,
+          },
+        ],
+      },
+      {
+        title: "Service Requests",
+        href: "/app/service-requests",
+        icon: FileText,
+      },
+    ];
+
+    const adminItems = [
+      ...staffItems,
       {
         title: "All Appointments",
         href: "/app/bookings",
         icon: Calendar,
+        children: [
+          {
+            title: "All Schedule",
+            href: "/app/bookings",
+            icon: Calendar,
+          },
+          {
+            title: "New Appointment",
+            href: "/app/bookings/new",
+            icon: Calendar,
+          },
+        ],
       },
       {
-        title: "New Appointment",
-        href: "/app/bookings/new",
-        icon: Calendar,
+        title: "Email Test",
+        href: "/app/email-test",
+        icon: Mail,
       },
+    ];
+
+    const ownerItems = [
+      ...adminItems,
       {
-        title: "Consultation Types",
-        href: "/app/bookings/types",
-        icon: Stethoscope,
-      },
-    ],
-  },
-  {
-    title: "Medical Supplies",
-    href: "/app/inventory",
-    icon: Package,
-    children: [
-      {
-        title: "All Supplies",
+        title: "Medical Supplies",
         href: "/app/inventory",
         icon: Package,
+        children: [
+          {
+            title: "All Supplies",
+            href: "/app/inventory",
+            icon: Package,
+          },
+          {
+            title: "New Supply",
+            href: "/app/inventory/new",
+            icon: Package,
+          },
+        ],
       },
-      {
-        title: "New Supply",
-        href: "/app/inventory/new",
-        icon: Package,
-      },
-    ],
-  },
-  {
-    title: "Health Forms",
-    href: "/app/forms",
-    icon: FileText,
-    children: [
-      {
-        title: "All Forms",
-        href: "/app/forms",
-        icon: FileText,
-      },
-      {
-        title: "New Form",
-        href: "/app/forms/new",
-        icon: FileText,
-      },
-    ],
-  },
-  {
-    title: "Patient Inbox",
-    href: "/app/inbox",
-    icon: MessageSquare,
-  },
-  {
-    title: "Fitness Programs",
-    href: "/app/fitness",
-    icon: Dumbbell,
-    children: [
-      {
-        title: "All Programs",
-        href: "/app/fitness",
-        icon: Dumbbell,
-      },
-      {
-        title: "New Program",
-        href: "/app/fitness/new",
-        icon: Dumbbell,
-      },
-    ],
-  },
-  {
-    title: "Health Analytics",
-    href: "/app/analytics",
-    icon: Activity,
-  },
-  {
-    title: "Settings",
-    href: "/app/settings",
-    icon: Settings,
-  },
-];
+    ];
 
-export default function Sidebar() {
-  const router = useRouter();
-  const pathname = usePathname();
-  const { workspace } = useAuth();
-  const [isCollapsed, setIsCollapsed] = useState(false);
-  const [expandedItems, setExpandedItems] = useState<string[]>([]);
+    // Return items based on role
+    switch (userRole) {
+      case "OWNER":
+        return ownerItems;
+      case "ADMIN":
+        return adminItems;
+      case "MEMBER":
+        return staffItems;
+      default:
+        return baseItems;
+    }
+  };
+
+  const sidebarItems = getSidebarItems();
 
   const toggleExpanded = (title: string) => {
     setExpandedItems((prev) =>
@@ -210,7 +234,7 @@ export default function Sidebar() {
             />
           )}
           {item.badge && !isCollapsed && (
-            <span className="bg-red-500 text-white text-xs px-2 py-1 rounded-full">
+            <span className="bg-gradient-to-r from-red-500 to-pink-500 text-white text-xs px-2 py-1 rounded-full shadow-lg shadow-red-500/25">
               {item.badge}
             </span>
           )}
@@ -244,10 +268,10 @@ export default function Sidebar() {
         width: isCollapsed ? "4rem" : "16rem",
       }}
       transition={{ duration: 0.3, ease: "easeInOut" }}
-      className="glass border-r border-white/20 h-full flex flex-col shadow-xl"
+      className="glass-dark border-r border-gray-800/50 h-full flex flex-col shadow-2xl"
     >
       {/* Header */}
-      <div className="p-4 border-b border-white/20">
+      <div className="p-6 border-b border-gray-800/50">
         <div className="flex items-center justify-between">
           {!isCollapsed && (
             <motion.div
@@ -255,13 +279,13 @@ export default function Sidebar() {
               animate={{ opacity: 1, x: 0 }}
               className="flex items-center space-x-3"
             >
-              <HeartPulse className="w-6 h-6 text-gradient animate-pulse-glow" />
+              <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-600 rounded-xl flex items-center justify-center shadow-lg shadow-purple-500/25">
+                <HeartPulse className="w-5 h-5 text-white" />
+              </div>
               <div>
-                <h3 className="font-bold text-gray-900 text-sm heading-primary">
-                  {workspace?.name || "VitalFlow"}
-                </h3>
-                <p className="text-xs text-gray-600">
-                  Health & Wellness Center
+                <h3 className="text-white font-black">VitalFlow</h3>
+                <p className="text-xs text-gray-400">
+                  {workspace?.name || "Healthcare"}
                 </p>
               </div>
             </motion.div>
@@ -271,35 +295,54 @@ export default function Sidebar() {
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
             onClick={() => setIsCollapsed(!isCollapsed)}
-            className="p-2 rounded-xl hover:bg-white/50 transition-all duration-200"
+            className="p-2 rounded-lg bg-gray-800/50 hover:bg-gray-700/50 transition-colors"
           >
             {isCollapsed ? (
-              <Menu className="w-5 h-5 text-gray-600" />
+              <Menu className="w-4 h-4 text-white" />
             ) : (
-              <X className="w-5 h-5 text-gray-600" />
+              <X className="w-4 h-4 text-white" />
             )}
           </motion.button>
         </div>
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
+      <div className="flex-1 p-6 space-y-3 overflow-y-auto">
         {sidebarItems.map((item, index) => (
           <SidebarItemComponent key={index} item={item} />
         ))}
-      </nav>
+      </div>
 
       {/* Footer */}
-      <div className="p-4 border-t border-white/20">
+      <div className="p-6 pt-8 border-t border-gray-800/50 mt-auto">
         {!isCollapsed && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-xs text-gray-500 text-center"
+            className="flex items-center space-x-3"
           >
-            <p className="text-gradient font-bold">VitalFlow</p>
-            <p className="text-xs text-gray-600">Health • Fitness • Care</p>
+            <div className="w-8 h-8 bg-gradient-to-r from-cyan-500 to-purple-600 rounded-full flex items-center justify-center shadow-lg shadow-cyan-500/25">
+              <span className="text-white text-sm font-bold">
+                {user?.name?.charAt(0) || "U"}
+              </span>
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-gray-100 text-sm font-bold truncate">
+                {user?.name || "User"}
+              </p>
+              <p className="text-xs text-gray-400 capitalize">
+                {workspace?.userRole || user?.role || "Member"}
+              </p>
+            </div>
           </motion.div>
+        )}
+
+        {isCollapsed && (
+          <div className="w-8 h-8 bg-gradient-to-r from-cyan-500 to-purple-600 rounded-full flex items-center justify-center mx-auto shadow-lg shadow-cyan-500/25">
+            <span className="text-white text-sm font-bold">
+              {user?.name?.charAt(0) || "U"}
+            </span>
+          </div>
         )}
       </div>
     </motion.div>

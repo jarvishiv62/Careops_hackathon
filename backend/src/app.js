@@ -20,6 +20,9 @@ import integrationsRoutes from "./modules/integrations/integrations.routes.js";
 import aiRoutes from "./modules/ai/ai.routes.js";
 import automationRoutes from "./modules/automations/automation.routes.js";
 import notificationRoutes from "./modules/notifications/notification.routes.js";
+import serviceRequestRoutes from "./routes/serviceRequests.js";
+import publicConversationsRoutes from "./routes/publicConversations.js";
+import emailTestRoutes from "./routes/emailTest.js";
 
 // Import middleware
 import { errorHandler } from "./middlewares/errorHandler.js";
@@ -33,7 +36,7 @@ import bookingReminderJob from "./jobs/bookingReminderJob.js";
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 4000;
+const PORT = process.env.PORT || 3001;
 
 // Get __dirname equivalent in ES modules
 const __filename = fileURLToPath(import.meta.url);
@@ -51,7 +54,7 @@ app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
 app.get("/health", (req, res) => {
   res.json({
     status: "ok",
-    message: "CareOps API is running",
+    message: "VitalFlow API is running",
     timestamp: new Date().toISOString(),
   });
 });
@@ -71,6 +74,10 @@ app.use("/api/integrations", integrationsRoutes);
 app.use("/api/ai", aiRoutes);
 app.use("/api/automations", automationRoutes);
 app.use("/api/notifications", notificationRoutes);
+app.use("/api/service-requests", serviceRequestRoutes);
+app.use("/api/public-conversations", publicConversationsRoutes);
+app.use("/api/email-test", emailTestRoutes);
+app.use("/api/conversations", conversationsRoutes);
 
 // 404 handler
 app.use((req, res) => {

@@ -22,6 +22,7 @@ interface Workspace {
   name: string;
   slug?: string;
   description?: string;
+  userRole?: string;
 }
 
 interface AuthContextType {
@@ -78,7 +79,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (response.ok) {
         const data = await response.json();
         setUser(data.data);
-        setWorkspace(data.data.workspace);
+        setWorkspace({
+          ...data.data.workspace,
+          userRole: data.data.role,
+        });
       } else {
         // Token invalid, clear it
         localStorage.removeItem("careops_token");
@@ -132,7 +136,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       } = data.data;
 
       setUser(userData);
-      setWorkspace(workspaceData);
+      setWorkspace({
+        ...workspaceData,
+        userRole: userData.role,
+      });
       setToken(authToken);
       localStorage.setItem("careops_token", authToken);
     } catch (error) {
@@ -166,7 +173,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       } = result.data;
 
       setUser(userData);
-      setWorkspace(workspaceData);
+      setWorkspace({
+        ...workspaceData,
+        userRole: userData.role,
+      });
       setToken(authToken);
       localStorage.setItem("careops_token", authToken);
     } catch (error) {

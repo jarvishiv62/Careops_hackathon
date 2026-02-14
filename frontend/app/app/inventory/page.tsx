@@ -114,13 +114,13 @@ export default function InventoryPage() {
   const getStatusColor = (status: string) => {
     switch (status) {
       case "IN_STOCK":
-        return "bg-green-100 text-green-800";
+        return "bg-green-500/20 text-green-400 border border-green-500/30";
       case "LOW_STOCK":
-        return "bg-yellow-100 text-yellow-800";
+        return "bg-yellow-500/20 text-yellow-400 border border-yellow-500/30";
       case "OUT_OF_STOCK":
-        return "bg-red-100 text-red-800";
+        return "bg-red-500/20 text-red-400 border border-red-500/30";
       default:
-        return "bg-gray-100 text-gray-800";
+        return "bg-gray-500/20 text-gray-400 border border-gray-500/30";
     }
   };
 
@@ -139,27 +139,27 @@ export default function InventoryPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center">
+      <div className="min-h-screen">
         <motion.div
           animate={{ rotate: 360 }}
           transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-          className="w-16 h-16 border-4 border-pink-200 border-t-pink-600 rounded-full"
+          className="w-16 h-16 border-4 border-purple-500/20 border-t-purple-500 rounded-full"
         />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+    <div className="min-h-screen">
       {/* Header */}
-      <header className="bg-white/80 backdrop-blur-sm shadow-sm border-b border-gray-200/50">
+      <header className="glass-dark border-b border-gray-800/50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
               <motion.h1
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
-                className="text-2xl font-bold text-gray-900"
+                className="heading-primary"
               >
                 Inventory
               </motion.h1>
@@ -168,7 +168,7 @@ export default function InventoryPage() {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => router.push("/app/inventory/new")}
-              className="bg-pink-600 text-white px-4 py-2 rounded-lg hover:bg-pink-700 flex items-center gap-2"
+              className="btn-primary flex items-center gap-2"
             >
               <Plus className="w-4 h-4" />
               Add Item
@@ -181,13 +181,13 @@ export default function InventoryPage() {
         {/* Search Bar */}
         <div className="mb-6">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 w-5 h-5" />
             <input
               type="text"
               placeholder="Search inventory items..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500"
+              className="input-field pl-10"
             />
           </div>
         </div>
@@ -200,31 +200,31 @@ export default function InventoryPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1 }}
-              className="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow p-6"
+              className="card-gradient hover-glow p-6"
             >
               <div className="flex items-start justify-between mb-4">
                 <div className="flex items-center gap-3">
                   <div
-                    className={`w-12 h-12 rounded-full flex items-center justify-center ${
+                    className={`w-12 h-12 rounded-xl flex items-center justify-center ${
                       getStockStatus(item) === "IN_STOCK"
-                        ? "bg-green-100"
+                        ? "bg-green-500/20"
                         : getStockStatus(item) === "LOW_STOCK"
-                          ? "bg-yellow-100"
-                          : "bg-red-100"
+                          ? "bg-yellow-500/20"
+                          : "bg-red-500/20"
                     }`}
                   >
                     <Package
                       className={`w-6 h-6 ${
                         getStockStatus(item) === "IN_STOCK"
-                          ? "text-green-600"
+                          ? "text-green-400"
                           : getStockStatus(item) === "LOW_STOCK"
-                            ? "text-yellow-600"
-                            : "text-red-600"
+                            ? "text-yellow-400"
+                            : "text-red-400"
                       }`}
                     />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-gray-900">{item.name}</h3>
+                    <h3 className="font-bold text-gray-100">{item.name}</h3>
                     <span
                       className={`text-xs px-2 py-1 rounded-full flex items-center gap-1 w-fit ${getStatusColor(getStockStatus(item))}`}
                     >
@@ -238,7 +238,7 @@ export default function InventoryPage() {
                     onClick={() =>
                       router.push(`/app/inventory/${item.id}/edit`)
                     }
-                    className="text-gray-400 hover:text-pink-600 transition-colors"
+                    className="text-gray-400 hover:text-purple-400 transition-colors"
                   >
                     <Edit className="w-4 h-4" />
                   </button>
@@ -247,7 +247,7 @@ export default function InventoryPage() {
                       setItemToDelete(item.id);
                       setShowDeleteModal(true);
                     }}
-                    className="text-gray-400 hover:text-red-600 transition-colors"
+                    className="text-gray-400 hover:text-red-400 transition-colors"
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>
@@ -255,42 +255,40 @@ export default function InventoryPage() {
               </div>
 
               {item.description && (
-                <p className="text-sm text-gray-600 mb-4">{item.description}</p>
+                <p className="text-sm text-gray-300 mb-4">{item.description}</p>
               )}
 
               <div className="space-y-3">
                 <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-500">Quantity</span>
-                  <span className="font-semibold text-gray-900">
+                  <span className="text-sm text-gray-400">Quantity</span>
+                  <span className="font-bold text-gray-100">
                     {item.quantity} {item.unit}
                   </span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-500">Min. Threshold</span>
-                  <span className="text-sm text-gray-700">
+                  <span className="text-sm text-gray-400">Min. Threshold</span>
+                  <span className="text-sm text-gray-300">
                     {getMinThreshold(item)} {item.unit}
                   </span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-500">Category</span>
-                  <span className="text-sm text-gray-700">
+                  <span className="text-sm text-gray-400">Category</span>
+                  <span className="text-sm text-gray-300">
                     {item.category || "Uncategorized"}
                   </span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-500">Created</span>
-                  <span className="text-sm text-gray-700">
+                  <span className="text-sm text-gray-400">Created</span>
+                  <span className="text-sm text-gray-300">
                     {new Date(item.createdAt).toLocaleDateString()}
                   </span>
                 </div>
               </div>
 
-              <div className="mt-4 pt-4 border-t border-gray-100">
+              <div className="mt-4 pt-4 border-t border-gray-800/50">
                 <div className="text-center">
-                  <div className="font-semibold text-gray-900">
-                    {item.quantity}
-                  </div>
-                  <div className="text-gray-500 text-sm">Current Stock</div>
+                  <div className="font-bold text-gray-100">{item.quantity}</div>
+                  <div className="text-gray-400 text-sm">Current Stock</div>
                 </div>
               </div>
             </motion.div>
@@ -299,11 +297,9 @@ export default function InventoryPage() {
 
         {filteredInventory.length === 0 && (
           <div className="text-center py-12">
-            <Package className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">
-              No inventory items found
-            </h3>
-            <p className="text-gray-500 mb-4">
+            <Package className="w-16 h-16 text-gray-500 mx-auto mb-4" />
+            <h3 className="heading-secondary mb-2">No inventory items found</h3>
+            <p className="text-gray-400 mb-4">
               {searchTerm
                 ? "Try adjusting your search terms"
                 : "Get started by adding your first inventory item"}
@@ -311,7 +307,7 @@ export default function InventoryPage() {
             {!searchTerm && (
               <button
                 onClick={() => router.push("/app/inventory/new")}
-                className="bg-pink-600 text-white px-4 py-2 rounded-lg hover:bg-pink-700"
+                className="btn-primary"
               >
                 Add Item
               </button>
@@ -322,12 +318,10 @@ export default function InventoryPage() {
 
       {/* Delete Modal */}
       {showDeleteModal && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">
-              Delete Inventory Item
-            </h3>
-            <p className="text-gray-600 mb-6">
+        <div className="fixed inset-0 flex items-center justify-center bg-black/80 backdrop-blur-sm z-50">
+          <div className="card-gradient max-w-md w-full mx-4">
+            <h3 className="heading-secondary mb-4">Delete Inventory Item</h3>
+            <p className="text-gray-300 mb-6">
               Are you sure you want to delete this inventory item? This action
               cannot be undone.
             </p>
@@ -337,13 +331,13 @@ export default function InventoryPage() {
                   setShowDeleteModal(false);
                   setItemToDelete(null);
                 }}
-                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
+                className="flex-1 btn-outline"
               >
                 Cancel
               </button>
               <button
                 onClick={handleDeleteItem}
-                className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
+                className="flex-1 px-4 py-2 bg-gradient-to-r from-red-500 to-pink-500 text-white rounded-xl hover:from-red-600 hover:to-pink-600 transition-all shadow-lg shadow-red-500/25"
               >
                 Delete
               </button>
