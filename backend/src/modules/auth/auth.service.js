@@ -82,6 +82,8 @@ class AuthService {
    * Login user
    */
   async login(email, password) {
+    console.log(`🔐 Login attempt for email: ${email}`);
+
     // Find user with workspace relationships
     const user = await prisma.user.findUnique({
       where: { email },
@@ -95,6 +97,7 @@ class AuthService {
     });
 
     if (!user) {
+      console.log(`❌ User not found: ${email}`);
       throw new Error("Invalid email or password");
     }
 
@@ -102,6 +105,7 @@ class AuthService {
     const isValidPassword = await comparePassword(password, user.password);
 
     if (!isValidPassword) {
+      console.log(`❌ Invalid password for: ${email}`);
       throw new Error("Invalid email or password");
     }
 
